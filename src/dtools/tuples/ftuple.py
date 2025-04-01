@@ -32,7 +32,7 @@ sentinel values.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator, Sequence
-from typing import cast, overload, TypeVar
+from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['FTuple', 'FT']
@@ -195,7 +195,7 @@ class FTuple[D](Sequence[D]):
 
     def bind[U](
         self, f: Callable[[D], FTuple[U]], type: FM = FM.CONCAT, /
-    ) -> FTuple[U]:
+    ) -> FTuple[U] | Never:
         """
         Bind function `f` to the `FTuple`.
 
@@ -213,7 +213,6 @@ class FTuple[D](Sequence[D]):
                 return FTuple(exhaust(*map(f, self)))
             case '*':
                 raise ValueError('Unknown FM type')
-
 
 def FT[D](*ds: D) -> FTuple[D]:
     """Return an FTuple whose values are the function arguments."""

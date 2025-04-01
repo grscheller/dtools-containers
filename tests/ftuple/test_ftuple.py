@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.datastructures.tuples import FTuple as ft, FT
+from dtools.tuples.ftuple import FTuple as ft, FT
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB, XOR
 
@@ -24,6 +24,7 @@ class TestFT:
         ft3 = ft1.copy()
         assert ft2[2] == ft2[5] == 0
         assert ft1[2] is not None and ft1[2]*2 == ft1[5] == 6
+        assert ft3[2] is not None and ft3[2]*2 == ft3[5] == 6
 
     def test_empty(self) -> None:
         ft1: ft[int] = FT()
@@ -40,7 +41,7 @@ class TestFT:
         assert ft3 is not ft2
         assert not ft3
         assert len(ft3) == 0
-        assert type(ft3) == ft
+        assert type(ft3) is ft
         ft4 = ft3.copy()
         assert ft4 == ft3
         assert ft4 is not ft3

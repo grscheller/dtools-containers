@@ -13,9 +13,9 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.datastructures.tuples import FTuple, FT
-from dtools.datastructures.queues import FIFOQueue, FQ, LIFOQueue, LQ
-from dtools.datastructures.splitends.se import SplitEnd, SE
+from dtools.tuples.ftuple import FTuple, FT
+from dtools.queues.restrictive import FIFOQueue as FQ
+from dtools.queues.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB
 
@@ -24,15 +24,15 @@ class Test_FP:
         l1 = lambda x, y: x + y
         l2 = lambda x, y: x * y
 
-        def pushFQfromL(q: FIFOQueue[S], d: S) -> FIFOQueue[S]:
+        def pushFQfromL(q: FQ[S], d: S) -> FQ[S]:
             q.push(d)
             return q
 
-        def pushFQfromR(d: S, q: FIFOQueue[S]) -> FIFOQueue[S]:
+        def pushFQfromR(d: S, q: FQ[S]) -> FQ[S]:
             q.push(d)
             return q
 
-        def pushSE(se: SplitEnd[S], d: S) -> SplitEnd[S]:
+        def pushSE(se: SE[S], d: S) -> SE[S]:
             se.push(d)
             return se
 
@@ -61,17 +61,17 @@ class Test_FP:
         assert ft0 == FT()
         assert ft5 == FT(1,2,3,4,5)
 
-        fq1: FIFOQueue[int] = FQ()
-        fq2: FIFOQueue[int] = FQ()
+        fq1: FQ[int] = FQ()
+        fq2: FQ[int] = FQ()
         assert ft5.foldL(pushFQfromL, fq1.copy()) == FQ(1,2,3,4,5)
         assert ft0.foldL(pushFQfromL, fq2.copy()) == FQ()
         assert ft5.foldR(pushFQfromR, fq1.copy()) == FQ(5,4,3,2,1)
         assert ft0.foldR(pushFQfromR, fq2.copy()) == FQ()
 
-        fq5: FIFOQueue[int] = FQ()
-        fq6 = FIFOQueue[int]()
-        fq7: FIFOQueue[int] = FQ()
-        fq8 = FIFOQueue[int]()
+        fq5: FQ[int] = FQ()
+        fq6 = FQ[int]()
+        fq7: FQ[int] = FQ()
+        fq8 = FQ[int]()
         assert ft5.foldL(pushFQfromL, fq5) == FQ(1,2,3,4,5)
         assert ft5.foldL(pushFQfromL, fq6) == FQ(1,2,3,4,5)
         assert ft0.foldL(pushFQfromL, fq7) == FQ()
