@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.tuples.ftuple import FTuple as ft, FT
+from dtools.tuples.ftuple import FTuple as FT
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB, XOR
 
@@ -27,8 +27,8 @@ class TestFT:
         assert ft3[2] is not None and ft3[2]*2 == ft3[5] == 6
 
     def test_empty(self) -> None:
-        ft1: ft[int] = FT()
-        ft2: ft[int] = ft()
+        ft1: FT[int] = FT()
+        ft2: FT[int] = FT()
         assert ft1 == ft2
         assert ft1 is not ft2
         assert not ft1
@@ -41,7 +41,7 @@ class TestFT:
         assert ft3 is not ft2
         assert not ft3
         assert len(ft3) == 0
-        assert type(ft3) is ft
+        assert type(ft3) is FT
         ft4 = ft3.copy()
         assert ft4 == ft3
         assert ft4 is not ft3
@@ -50,7 +50,7 @@ class TestFT:
         assert str(XOR.idx(ft2, 42).getRight().get()) == 'tuple index out of range'
 
     def test_indexing(self) -> None:
-        ft0: ft[str] = FT()
+        ft0: FT[str] = FT()
         ft1 = FT("Emily", "Rachel", "Sarah", "Rebekah", "Mary")
         assert ft1[2] == "Sarah"
         assert ft1[0] == "Emily"
@@ -63,8 +63,8 @@ class TestFT:
         assert MB.idx(ft0, 0).get('Buggy') == 'Buggy'
 
     def test_slicing(self) -> None:
-        ft0: ft[int] = FT()
-        ft1: ft[int]  = FT(*range(0,101,10))
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(*range(0,101,10))
         assert ft1 == FT(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
         assert ft1[2:7:2] == FT(20, 40, 60)
         assert ft1[8:2:-2] == FT(80, 60, 40)
@@ -75,16 +75,16 @@ class TestFT:
         assert ft0[2:6] == FT()
 
     def test_map(self) -> None:
-        ft0: ft[int] = ft()
-        ft1: ft[int]  = ft(range(6))
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(*range(6))
         assert ft1 == FT(0, 1, 2, 3, 4, 5)
 
         assert ft1.map(lambda t: t*t) == FT(0, 1, 4, 9, 16, 25)
         assert ft0.map(lambda t: t*t) == FT()
 
     def test_foldL(self) -> None:
-        ft0: ft[int] = FT()
-        ft1: ft[int]  = FT(*range(1, 6))
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(*range(1, 6))
         assert ft1 == FT(1, 2, 3, 4, 5)
 
         assert ft1.foldL(lambda s, t: s*t) == 120
@@ -93,8 +93,8 @@ class TestFT:
         assert ft0.foldL(lambda s, t: s*t, start=10) == 10
 
     def test_foldR(self) -> None:
-        ft0: ft[int] = FT()
-        ft1: ft[int]  = FT(*range(1, 4))
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(*range(1, 4))
         assert ft1 == FT(1, 2, 3)
 
         assert ft1.foldR(lambda t, s: s*s - t) == 48
@@ -117,8 +117,8 @@ class TestFT:
             assert False
 
     def test_accummulate(self) -> None:
-        ft0: ft[int] = ft()
-        ft1: ft[int]  = ft(range(1,6))
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(*range(1,6))
         assert ft1 == FT(1, 2, 3, 4, 5)
 
         def add(x: int, y: int) -> int:
@@ -130,12 +130,12 @@ class TestFT:
         assert ft0.accummulate(lambda x, y: x+y, 1) == FT(1)
 
     def test_bind(self) -> None:
-        ft0: ft[int] = FT()
+        ft0: FT[int] = FT()
         ft1 = FT(4, 2, 3, 5)
         ft2 = FT(4, 2, 0, 3)
 
-        def ff(n: int) -> ft[int]:
-            return ft(range(n))
+        def ff(n: int) -> FT[int]:
+            return FT(*range(n))
 
         fm = ft1.bind(ff)
         mm = ft1.bind(ff, FM.MERGE)

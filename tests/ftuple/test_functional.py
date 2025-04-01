@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.tuples.ftuple import FTuple, FT
+from dtools.tuples.ftuple import FTuple as FT
 from dtools.queues.restrictive import FIFOQueue as FQ
 from dtools.queues.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
@@ -36,9 +36,8 @@ class Test_FP:
             se.push(d)
             return se
 
-        ft0: FTuple[int] = FT()
-        ft1: FTuple[int] = FT(1)
-        ft5: FTuple[int] = FT(1, 2, 3, 4, 5)
+        ft0: FT[int] = FT()
+        ft5: FT[int] = FT(1, 2, 3, 4, 5)
         se5 = SE(1, 2, 3, 4, 5)
 
         assert se5.peak() == 5
@@ -97,9 +96,9 @@ class Test_FP:
         assert ft0.accummulate(l2) == FT()
 
     def test_ftuple_bind(self) -> None:
-        ft = FTuple(range(3, 101))
+        ft = FT(*range(3, 101))
         l1 = lambda x: 2*x + 1
-        l2 = lambda x: FTuple(range(2, x+1)).accummulate(lambda x, y: x+y)
+        l2 = lambda x: FT(*range(2, x+1)).accummulate(lambda x, y: x+y)
         ft1 = ft.map(l1)
         ft2 = ft.bind(l2, FM.CONCAT)
         ft3 = ft.bind(l2, FM.MERGE)

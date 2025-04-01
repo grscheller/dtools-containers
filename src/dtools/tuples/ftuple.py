@@ -31,11 +31,11 @@ sentinel values.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
-__all__ = ['FTuple', 'FT']
+__all__ = ['FTuple']
 
 D = TypeVar('D')  # Not needed for mypy, hint for pdoc.
 E = TypeVar('E')
@@ -58,12 +58,8 @@ class FTuple[D](Sequence[D]):
 
     __slots__ = ('_ds',)
 
-    def __init__(self, *dss: Iterable[D]) -> None:
-        if len(dss) < 2:
-            self._ds: tuple[D, ...] = tuple(*dss)
-        else:
-            msg = f'FTuple expected at most 1 iterable argument, got {len(dss)}'
-            raise TypeError(msg)
+    def __init__(self, *ds: D) -> None:
+        self._ds: tuple[D, ...] = tuple(ds)
 
     def __iter__(self) -> Iterator[D]:
         return iter(self._ds)
@@ -97,7 +93,7 @@ class FTuple[D](Sequence[D]):
 
     def __getitem__(self, idx: slice | int, /) -> FTuple[D] | D:
         if isinstance(idx, slice):
-            return FTuple(self._ds[idx])
+            return FTuple(*self._ds[idx])
         return self._ds[idx]
 
     def foldL[L](
@@ -159,22 +155,20 @@ class FTuple[D](Sequence[D]):
         return acc
 
     def copy(self) -> FTuple[D]:
-        """
-        **Copy**
-
-        Return a shallow copy of the FTuple in O(1) time & space complexity.
-
-        """
-        return FTuple(self)
+        """Return a shallow copy of FTuple in O(1) time & space complexity."""
+        return FTuple(*self)
 
     def __add__[E](self, other: FTuple[E], /) -> FTuple[D | E]:
-        return FTuple(concat(self, other))
+        if not isinstance(other, FTuple):
+            msg = 'Not an FTuple'
+            raise ValueError(msg)
+        return FTuple(*concat(self, other))  # type: ignore[arg-type]
 
     def __mul__(self, num: int, /) -> FTuple[D]:
-        return FTuple(self._ds.__mul__(num if num > 0 else 0))
+        return FTuple(*self._ds.__mul__(num if num > 0 else 0))
 
     def __rmul__(self, num: int, /) -> FTuple[D]:
-        return FTuple(self._ds.__mul__(num if num > 0 else 0))
+        return FTuple(*self._ds.__mul__(num if num > 0 else 0))
 
     def accummulate[L](
         self, f: Callable[[L, D], L], s: L | None = None, /
@@ -187,11 +181,11 @@ class FTuple[D](Sequence[D]):
 
         """
         if s is None:
-            return FTuple(accumulate(self, f))
-        return FTuple(accumulate(self, f, s))
+            return FTuple(*accumulate(self, f))
+        return FTuple(*accumulate(self, f, s))
 
     def map[U](self, f: Callable[[D], U], /) -> FTuple[U]:
-        return FTuple(map(f, self))
+        return FTuple(*map(f, self))
 
     def bind[U](
         self, f: Callable[[D], FTuple[U]], type: FM = FM.CONCAT, /
@@ -206,14 +200,10 @@ class FTuple[D](Sequence[D]):
         """
         match type:
             case FM.CONCAT:
-                return FTuple(concat(*map(f, self)))
+                return FTuple(*concat(*map(f, self)))
             case FM.MERGE:
-                return FTuple(merge(*map(f, self)))
+                return FTuple(*merge(*map(f, self)))
             case FM.EXHAUST:
-                return FTuple(exhaust(*map(f, self)))
+                return FTuple(*exhaust(*map(f, self)))
             case '*':
                 raise ValueError('Unknown FM type')
-
-def FT[D](*ds: D) -> FTuple[D]:
-    """Return an FTuple whose values are the function arguments."""
-    return FTuple(ds)
