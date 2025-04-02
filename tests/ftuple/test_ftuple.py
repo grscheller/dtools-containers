@@ -18,7 +18,9 @@ from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB, XOR
 
 class TestFT:
+    """FTuple test suite"""
     def test_method_returns_copy(self) -> None:
+        """Test guarantee"""
         ft1 = FT(1, 2, 3, 4, 5, 6)
         ft2 = ft1.map(lambda x: x % 3)
         ft3 = ft1.copy()
@@ -27,6 +29,7 @@ class TestFT:
         assert ft3[2] is not None and ft3[2]*2 == ft3[5] == 6
 
     def test_empty(self) -> None:
+        """Test functionality"""
         ft1: FT[int] = FT()
         ft2: FT[int] = FT()
         assert ft1 == ft2
@@ -41,7 +44,7 @@ class TestFT:
         assert ft3 is not ft2
         assert not ft3
         assert len(ft3) == 0
-        assert type(ft3) is FT
+        assert isinstance(ft3, FT)
         ft4 = ft3.copy()
         assert ft4 == ft3
         assert ft4 is not ft3
@@ -82,35 +85,35 @@ class TestFT:
         assert ft1.map(lambda t: t*t) == FT(0, 1, 4, 9, 16, 25)
         assert ft0.map(lambda t: t*t) == FT()
 
-    def test_foldL(self) -> None:
+    def test_foldl(self) -> None:
         ft0: FT[int] = FT()
         ft1: FT[int]  = FT(*range(1, 6))
         assert ft1 == FT(1, 2, 3, 4, 5)
 
-        assert ft1.foldL(lambda s, t: s*t) == 120
-        assert ft0.foldL(lambda s, t: s*t, default=42) == 42
-        assert ft1.foldL(lambda s, t: s*t, 10) == 1200
-        assert ft0.foldL(lambda s, t: s*t, start=10) == 10
+        assert ft1.foldl(lambda s, t: s*t) == 120
+        assert ft0.foldl(lambda s, t: s*t, default=42) == 42
+        assert ft1.foldl(lambda s, t: s*t, 10) == 1200
+        assert ft0.foldl(lambda s, t: s*t, start=10) == 10
 
-    def test_foldR(self) -> None:
+    def test_foldr(self) -> None:
         ft0: FT[int] = FT()
         ft1: FT[int]  = FT(*range(1, 4))
         assert ft1 == FT(1, 2, 3)
 
-        assert ft1.foldR(lambda t, s: s*s - t) == 48
-        assert ft0.foldR(lambda t, s: s*s - t, default = -1) == -1
-        assert ft1.foldR(lambda t, s: s*s - t, start=5) == 232323
-        assert ft0.foldR(lambda t, s: s*s - t, 5) == 5
+        assert ft1.foldr(lambda t, s: s*s - t) == 48
+        assert ft0.foldr(lambda t, s: s*s - t, default = -1) == -1
+        assert ft1.foldr(lambda t, s: s*s - t, start=5) == 232323
+        assert ft0.foldr(lambda t, s: s*s - t, 5) == 5
 
         try:
-            _ = ft0.foldR(lambda t, s: 5*t + 6*s)
+            _ = ft0.foldr(lambda t, s: 5*t + 6*s)
         except ValueError:
             assert True
         else:
             assert False
 
         try:
-            _ = ft0.foldL(lambda t, s: 5*t + 6*s)
+            _ = ft0.foldl(lambda t, s: 5*t + 6*s)
         except ValueError:
             assert True
         else:

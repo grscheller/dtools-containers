@@ -96,7 +96,7 @@ class FTuple[D](Sequence[D]):
             return FTuple(*self._ds[idx])
         return self._ds[idx]
 
-    def foldL[L](
+    def foldl[L](
         self,
         f: Callable[[L, D], L],
         /,
@@ -125,7 +125,7 @@ class FTuple[D](Sequence[D]):
             acc = f(acc, v)
         return acc
 
-    def foldR[R](
+    def foldr[R](
         self,
         f: Callable[[D, R], R],
         /,

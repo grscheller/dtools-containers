@@ -22,7 +22,7 @@
 
 """
 
-__version__ = '0.26.0.1'
+__version__ = '0.26.0.2'
 __author__ = 'Geoffrey R. Scheller'
 __copyright__ = 'Copyright (c) 2023-2025 Geoffrey R. Scheller'
 __license__ = 'Apache License 2.0'
