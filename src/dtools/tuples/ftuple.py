@@ -31,20 +31,21 @@ sentinel values.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator, Sequence
-from typing import cast, Never, overload, TypeVar
+from collections.abc import Callable, Iterable, Iterator
+from typing import cast, Never, overload#, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['FTuple']
 
-D = TypeVar('D')  # Not needed for mypy, hint for pdoc.
-E = TypeVar('E')
-L = TypeVar('L')
-R = TypeVar('R')
-U = TypeVar('U')
+# D = TypeVar('D')  # Hint for pdoc,
+# E = TypeVar('E')  # not needed for mypy or Python.
+# L = TypeVar('L')  # Uncomment these lines and
+# R = TypeVar('R')  # the "#, TypeVar" above
+# U = TypeVar('U')  #
+# T = TypeVar('T')  #
 
 
-class FTuple[D](Sequence[D]):
+class FTuple[D]():
     """
     #### Functional Tuple
 
@@ -58,8 +59,13 @@ class FTuple[D](Sequence[D]):
 
     __slots__ = ('_ds',)
 
-    def __init__(self, *ds: D) -> None:
-        self._ds: tuple[D, ...] = tuple(ds)
+    def __init__(self, *dss: Iterable[D]) -> None:
+        if (size := len(dss)) <= 1:
+            self._ds: tuple[D, ...] = tuple(dss[0]) if size > 0 else tuple()
+        else:
+            msg = f'FTuple expects at most 1 iterable argument, got {size}'
+            #raise TypeError(msg)
+            raise ValueError(msg)
 
     def __iter__(self) -> Iterator[D]:
         return iter(self._ds)
@@ -93,7 +99,7 @@ class FTuple[D](Sequence[D]):
 
     def __getitem__(self, idx: slice | int, /) -> FTuple[D] | D:
         if isinstance(idx, slice):
-            return FTuple(*self._ds[idx])
+            return FTuple(self._ds[idx])
         return self._ds[idx]
 
     def foldl[L](
@@ -156,19 +162,19 @@ class FTuple[D](Sequence[D]):
 
     def copy(self) -> FTuple[D]:
         """Return a shallow copy of FTuple in O(1) time & space complexity."""
-        return FTuple(*self)
+        return FTuple(self)
 
     def __add__[E](self, other: FTuple[E], /) -> FTuple[D | E]:
         if not isinstance(other, FTuple):
             msg = 'Not an FTuple'
             raise ValueError(msg)
-        return FTuple(*concat(self, other))  # type: ignore[arg-type]
+        return FTuple(concat(self, other))
 
     def __mul__(self, num: int, /) -> FTuple[D]:
-        return FTuple(*self._ds.__mul__(num if num > 0 else 0))
+        return FTuple(self._ds.__mul__(num if num > 0 else 0))
 
     def __rmul__(self, num: int, /) -> FTuple[D]:
-        return FTuple(*self._ds.__mul__(num if num > 0 else 0))
+        return FTuple(self._ds.__mul__(num if num > 0 else 0))
 
     def accummulate[L](
         self, f: Callable[[L, D], L], s: L | None = None, /
@@ -181,11 +187,11 @@ class FTuple[D](Sequence[D]):
 
         """
         if s is None:
-            return FTuple(*accumulate(self, f))
-        return FTuple(*accumulate(self, f, s))
+            return FTuple(accumulate(self, f))
+        return FTuple(accumulate(self, f, s))
 
     def map[U](self, f: Callable[[D], U], /) -> FTuple[U]:
-        return FTuple(*map(f, self))
+        return FTuple(map(f, self))
 
     def bind[U](
         self, f: Callable[[D], FTuple[U]], type: FM = FM.CONCAT, /
@@ -200,15 +206,14 @@ class FTuple[D](Sequence[D]):
         """
         match type:
             case FM.CONCAT:
-                return FTuple(*concat(*map(f, self)))
+                return FTuple(concat(*map(f, self)))
             case FM.MERGE:
-                return FTuple(*merge(*map(f, self)))
+                return FTuple(merge(*map(f, self)))
             case FM.EXHAUST:
-                return FTuple(*exhaust(*map(f, self)))
+                return FTuple(exhaust(*map(f, self)))
             case '*':
                 raise ValueError('Unknown FM type')
 
-    @staticmethod
-    def ft[T](ts: Iterable[T]) -> FTuple[T]:
-        """Return an `FTuple` from an iterable."""
-        return FTuple(*ts)
+def f_tuple[T](*ts: T) -> FTuple[T]:
+    """Return an `FTuple` from multiple values."""
+    return FTuple(ts)

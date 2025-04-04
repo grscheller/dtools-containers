@@ -16,9 +16,9 @@
 
 from __future__ import annotations
 from dtools.tuples.ftuple import FTuple as FT
-# from dtools.tuples.ftuple import f_tuple as ft
-from dtools.queues.restrictive import FIFOQueue as FQ
-from dtools.queues.restrictive import fifo_queue as fq
+from dtools.tuples.ftuple import f_tuple as ft
+from dtools.queues.restrictive import DoubleQueue as DQ
+from dtools.queues.restrictive import double_queue as dq
 from dtools.queues.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB
@@ -26,87 +26,90 @@ from dtools.fp.err_handling import MB
 
 class TestFP:
     """FP test of FTuple with other datastructures"""
-    def test_fold[S](self) -> None:
+    def test_fold(self) -> None:
         """Test folding"""
-        l1 = lambda x, y: x + y
-        l2 = lambda x, y: x * y
+        def add2(x: int, y: int) -> int:
+            return x + y
 
-        def push_fq_from_left(q: FQ[S], d: S) -> FQ[S]:
-            q.push(d)
+        def mult2[S](x: int, y: int) -> int:
+            return x * y
+
+        def push_fq_from_left[S](q: DQ[S], d: S) -> DQ[S]:
+            q.pushl(d)
             return q
 
-        def push_fq_from_right(d: S, q: FQ[S]) -> FQ[S]:
-            q.push(d)
+        def push_fq_from_right[S](d: S, q: DQ[S]) -> DQ[S]:
+            q.pushr(d)
             return q
 
-        def push_se(se: SE[S], d: S) -> SE[S]:
+        def push_ft_from_left[S](t: FT[S], d: S) -> FT[S]:
+            return ft(d) + t
+
+        def push_ft_from_right[S](d: S, t: FT[S]) -> FT[S]:
+            return t + ft(d)
+
+        def push_se[S](se: SE[S], d: S) -> SE[S]:
             se.push(d)
             return se
 
         ft0: FT[int] = FT()
-        ft5: FT[int] = FT(1, 2, 3, 4, 5)
+        ft5: FT[int] = ft(1, 2, 3, 4, 5)
         se5 = SE(1, 2, 3, 4, 5)
 
         assert se5.peak() == 5
         assert ft5[1] == 2
         assert ft5[4] == 5
 
-        assert ft0.foldl(l1, 42) == 42
-        assert ft0.foldr(l1, 42) == 42
-        assert ft5.foldl(l1) == 15
-        assert ft5.foldl(l1, 0) == 15
-        assert ft5.foldl(l1, 10) == 25
-        assert ft5.foldl(l2, 1) == 120
-        assert ft5.foldl(l2, 10) == 1200
-        assert ft5.foldr(l1) == 15
-        assert ft5.foldr(l1, 0) == 15
-        assert ft5.foldr(l1, 10) == 25
-        assert ft5.foldr(l2, 1) == 120
-        assert ft5.foldr(l2, 10) == 1200
+        assert ft0.foldl(add2, 42) == 42
+        assert ft0.foldr(add2, 42) == 42
+        assert ft5.foldl(add2) == 15
+        assert ft5.foldl(add2, 0) == 15
+        assert ft5.foldl(add2, 10) == 25
+        assert ft5.foldl(mult2, 1) == 120
+        assert ft5.foldl(mult2, 10) == 1200
+        assert ft5.foldr(add2) == 15
+        assert ft5.foldr(add2, 0) == 15
+        assert ft5.foldr(add2, 10) == 25
+        assert ft5.foldr(mult2, 1) == 120
+        assert ft5.foldr(mult2, 10) == 1200
 
         assert ft0 == FT()
-        assert ft5 == FT(1, 2, 3, 4, 5)
+        assert ft5 == ft(1, 2, 3, 4, 5)
+        dq1: DQ[int] = DQ()
 
-        fq1: FQ[int] = FQ()
-        fq2: FQ[int] = FQ()
-        assert ft5.foldl(push_fq_from_left, fq1.copy()) == fq(1, 2, 3, 4, 5)
-        assert ft0.foldl(push_fq_from_left, fq2.copy()) == fq()
-        assert ft5.foldr(push_fq_from_right, fq1.copy()) == fq(5, 4, 3, 2, 1)
-        assert ft0.foldr(push_fq_from_right, fq2.copy()) == fq()
+        assert ft5.foldl(push_fq_from_left, dq1.copy()) == dq(1, 2, 3, 4, 5)
+        assert ft0.foldl(push_fq_from_left, dq1.copy()) == dq()
+        assert ft5.foldr(push_fq_from_right, dq1.copy()) == dq(5, 4, 3, 2, 1)
+        assert ft0.foldr(push_fq_from_right, dq1.copy()) == dq()
 
-        fq5: FQ[int] = FQ()
-        fq6 = FQ[int]()
-        fq7: FQ[int] = FQ()
-        fq8 = FQ[int]()
-        assert ft5.foldl(push_fq_from_left, fq5) == fq(1, 2, 3, 4, 5)
-        assert ft5.foldl(push_fq_from_left, fq6) == fq(1, 2, 3, 4, 5)
-        assert ft0.foldl(push_fq_from_left, fq7) == fq()
-        assert ft0.foldl(push_fq_from_left, fq8) == fq()
-        assert fq5 == fq6 == fq(1, 2, 3, 4, 5)
-        assert fq7 == fq8 == fq()
+        ft6 = FT[int]()
+        assert ft5.foldl(push_ft_from_left, ft6) == ft(1, 2, 3, 4, 5)
+        assert ft5.foldl(push_ft_from_left, ft6) == ft(1, 2, 3, 4, 5)
+        assert ft0.foldl(push_ft_from_left, ft6) == ft()
+        assert ft0.foldl(push_ft_from_left, ft6) == ft()
 
-        assert se5.fold(l1) == 15
-        assert se5.fold(l1, 10) == 25
-        assert se5.fold(l2) == 120
-        assert se5.fold(l2, 10) == 1200
+        assert se5.fold(add2) == 15
+        assert se5.fold(add2, 10) == 25
+        assert se5.fold(mult2) == 120
+        assert se5.fold(mult2, 10) == 1200
         se_temp = se5.copy()
         se_temp.pop()
         se5_rev = se_temp.fold(push_se, SE(se5.peak()))
         assert se5_rev == SE(5, 4, 3, 2, 1)
-        assert se5.fold(l1) == 15
-        assert se5.fold(l1, 10) == 25
+        assert se5.fold(add2) == 15
+        assert se5.fold(add2, 10) == 25
 
-        assert ft5.accummulate(l1) == FT(1, 3, 6, 10, 15)
-        assert ft5.accummulate(l1, 10) == FT(10, 11, 13, 16, 20, 25)
-        assert ft5.accummulate(l2) == FT(1, 2, 6, 24, 120)
-        assert ft0.accummulate(l1) == FT()
-        assert ft0.accummulate(l2) == FT()
+        assert ft5.accummulate(add2) == ft(1, 3, 6, 10, 15)
+        assert ft5.accummulate(add2, 10) == ft(10, 11, 13, 16, 20, 25)
+        assert ft5.accummulate(mult2) == ft(1, 2, 6, 24, 120)
+        assert ft0.accummulate(add2) == FT()
+        assert ft0.accummulate(mult2) == FT()
 
     def test_ftuple_bind(self) -> None:
         """Test bind (flatmap)"""
-        ft0 = FT(*range(3, 101))
+        ft0 = FT(range(3, 101))
         l1 = lambda x: 2 * x + 1
-        l2 = lambda x: FT(*range(2, x + 1)).accummulate(lambda x, y: x + y)
+        l2 = lambda x: FT(range(2, x + 1)).accummulate(lambda x, y: x + y)
         ft1 = ft0.map(l1)
         ft2 = ft0.bind(l2, FM.CONCAT)
         ft3 = ft0.bind(l2, FM.MERGE)

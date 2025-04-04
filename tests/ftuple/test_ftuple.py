@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 from dtools.tuples.ftuple import FTuple as FT
+from dtools.tuples.ftuple import f_tuple as ft
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB, XOR
 
@@ -21,7 +22,7 @@ class TestFT:
     """FTuple test suite"""
     def test_method_returns_copy(self) -> None:
         """Test guarantee"""
-        ft1 = FT(1, 2, 3, 4, 5, 6)
+        ft1 = ft(1, 2, 3, 4, 5, 6)
         ft2 = ft1.map(lambda x: x % 3)
         ft3 = ft1.copy()
         assert ft2[2] == ft2[5] == 0
@@ -54,7 +55,7 @@ class TestFT:
 
     def test_indexing(self) -> None:
         ft0: FT[str] = FT()
-        ft1 = FT("Emily", "Rachel", "Sarah", "Rebekah", "Mary")
+        ft1 = ft("Emily", "Rachel", "Sarah", "Rebekah", "Mary")
         assert ft1[2] == "Sarah"
         assert ft1[0] == "Emily"
         assert ft1[-1] == "Mary"
@@ -67,28 +68,28 @@ class TestFT:
 
     def test_slicing(self) -> None:
         ft0: FT[int] = FT()
-        ft1: FT[int]  = FT(*range(0,101,10))
-        assert ft1 == FT(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
-        assert ft1[2:7:2] == FT(20, 40, 60)
-        assert ft1[8:2:-2] == FT(80, 60, 40)
-        assert ft1[8:] == FT(80, 90, 100)
-        assert ft1[8:-1] == FT(80, 90)
+        ft1: FT[int]  = FT(range(0,101,10))
+        assert ft1 == ft(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+        assert ft1[2:7:2] == ft(20, 40, 60)
+        assert ft1[8:2:-2] == ft(80, 60, 40)
+        assert ft1[8:] == ft(80, 90, 100)
+        assert ft1[8:-1] == ft(80, 90)
         assert ft1 == ft1[:]
-        assert ft1[8:130] == FT(80, 90, 100)
-        assert ft0[2:6] == FT()
+        assert ft1[8:130] == ft(80, 90, 100)
+        assert ft0[2:6] == ft()
 
     def test_map(self) -> None:
         ft0: FT[int] = FT()
-        ft1: FT[int]  = FT(*range(6))
-        assert ft1 == FT(0, 1, 2, 3, 4, 5)
+        ft1: FT[int]  = FT(range(6))
+        assert ft1 == ft(0, 1, 2, 3, 4, 5)
 
-        assert ft1.map(lambda t: t*t) == FT(0, 1, 4, 9, 16, 25)
+        assert ft1.map(lambda t: t*t) == ft(0, 1, 4, 9, 16, 25)
         assert ft0.map(lambda t: t*t) == FT()
 
     def test_foldl(self) -> None:
         ft0: FT[int] = FT()
-        ft1: FT[int]  = FT(*range(1, 6))
-        assert ft1 == FT(1, 2, 3, 4, 5)
+        ft1: FT[int]  = FT(range(1, 6))
+        assert ft1 == ft(1, 2, 3, 4, 5)
 
         assert ft1.foldl(lambda s, t: s*t) == 120
         assert ft0.foldl(lambda s, t: s*t, default=42) == 42
@@ -97,8 +98,8 @@ class TestFT:
 
     def test_foldr(self) -> None:
         ft0: FT[int] = FT()
-        ft1: FT[int]  = FT(*range(1, 4))
-        assert ft1 == FT(1, 2, 3)
+        ft1: FT[int]  = FT(range(1, 4))
+        assert ft1 == ft(1, 2, 3)
 
         assert ft1.foldr(lambda t, s: s*s - t) == 48
         assert ft0.foldr(lambda t, s: s*s - t, default = -1) == -1
@@ -121,40 +122,40 @@ class TestFT:
 
     def test_accummulate(self) -> None:
         ft0: FT[int] = FT()
-        ft1: FT[int]  = FT(*range(1,6))
-        assert ft1 == FT(1, 2, 3, 4, 5)
+        ft1: FT[int]  = FT(range(1,6))
+        assert ft1 == ft(1, 2, 3, 4, 5)
 
         def add(x: int, y: int) -> int:
             return x + y
 
-        assert ft1.accummulate(add) == FT(1, 3, 6, 10, 15)
-        assert ft0.accummulate(add) == FT()
-        assert ft1.accummulate(lambda x, y: x+y, 1) == FT(1, 2, 4, 7, 11, 16)
-        assert ft0.accummulate(lambda x, y: x+y, 1) == FT(1)
+        assert ft1.accummulate(add) == ft(1, 3, 6, 10, 15)
+        assert ft0.accummulate(add) == ft()
+        assert ft1.accummulate(lambda x, y: x+y, 1) == ft(1, 2, 4, 7, 11, 16)
+        assert ft0.accummulate(lambda x, y: x+y, 1) == ft(1)
 
     def test_bind(self) -> None:
         ft0: FT[int] = FT()
-        ft1 = FT(4, 2, 3, 5)
-        ft2 = FT(4, 2, 0, 3)
+        ft1 = ft(4, 2, 3, 5)
+        ft2 = ft(4, 2, 0, 3)
 
         def ff(n: int) -> FT[int]:
-            return FT(*range(n))
+            return FT(range(n))
 
         fm = ft1.bind(ff)
         mm = ft1.bind(ff, FM.MERGE)
         em = ft1.bind(ff, FM.EXHAUST)
 
-        assert fm == FT(0, 1, 2, 3, 0, 1, 0, 1, 2, 0, 1, 2, 3, 4)
-        assert mm == FT(0, 0, 0, 0, 1, 1, 1, 1)
-        assert em == FT(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4)
+        assert fm == ft(0, 1, 2, 3, 0, 1, 0, 1, 2, 0, 1, 2, 3, 4)
+        assert mm == ft(0, 0, 0, 0, 1, 1, 1, 1)
+        assert em == ft(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4)
 
         fm = ft2.bind(ff, FM.CONCAT)
         mm = ft2.bind(ff, FM.MERGE)
         em = ft2.bind(ff, FM.EXHAUST)
 
-        assert fm == FT(0, 1, 2, 3, 0, 1, 0, 1, 2)
-        assert mm == FT()
-        assert em == FT(0, 0, 0, 1, 1, 1, 2, 2, 3)
+        assert fm == ft(0, 1, 2, 3, 0, 1, 0, 1, 2)
+        assert mm == ft()
+        assert em == ft(0, 0, 0, 1, 1, 1, 2, 2, 3)
 
         fm = ft0.bind(ff, FM.CONCAT)
         mm = ft0.bind(ff, FM.MERGE)
