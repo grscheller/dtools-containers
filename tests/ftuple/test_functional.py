@@ -16,7 +16,9 @@
 
 from __future__ import annotations
 from dtools.tuples.ftuple import FTuple as FT
+# from dtools.tuples.ftuple import f_tuple as ft
 from dtools.queues.restrictive import FIFOQueue as FQ
+from dtools.queues.restrictive import fifo_queue as fq
 from dtools.queues.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB
@@ -67,21 +69,21 @@ class TestFP:
 
         fq1: FQ[int] = FQ()
         fq2: FQ[int] = FQ()
-        assert ft5.foldl(push_fq_from_left, fq1.copy()) == FQ(1, 2, 3, 4, 5)
-        assert ft0.foldl(push_fq_from_left, fq2.copy()) == FQ()
-        assert ft5.foldr(push_fq_from_right, fq1.copy()) == FQ(5, 4, 3, 2, 1)
-        assert ft0.foldr(push_fq_from_right, fq2.copy()) == FQ()
+        assert ft5.foldl(push_fq_from_left, fq1.copy()) == fq(1, 2, 3, 4, 5)
+        assert ft0.foldl(push_fq_from_left, fq2.copy()) == fq()
+        assert ft5.foldr(push_fq_from_right, fq1.copy()) == fq(5, 4, 3, 2, 1)
+        assert ft0.foldr(push_fq_from_right, fq2.copy()) == fq()
 
         fq5: FQ[int] = FQ()
         fq6 = FQ[int]()
         fq7: FQ[int] = FQ()
         fq8 = FQ[int]()
-        assert ft5.foldl(push_fq_from_left, fq5) == FQ(1, 2, 3, 4, 5)
-        assert ft5.foldl(push_fq_from_left, fq6) == FQ(1, 2, 3, 4, 5)
-        assert ft0.foldl(push_fq_from_left, fq7) == FQ()
-        assert ft0.foldl(push_fq_from_left, fq8) == FQ()
-        assert fq5 == fq6 == FQ(1, 2, 3, 4, 5)
-        assert fq7 == fq8 == FQ()
+        assert ft5.foldl(push_fq_from_left, fq5) == fq(1, 2, 3, 4, 5)
+        assert ft5.foldl(push_fq_from_left, fq6) == fq(1, 2, 3, 4, 5)
+        assert ft0.foldl(push_fq_from_left, fq7) == fq()
+        assert ft0.foldl(push_fq_from_left, fq8) == fq()
+        assert fq5 == fq6 == fq(1, 2, 3, 4, 5)
+        assert fq7 == fq8 == fq()
 
         assert se5.fold(l1) == 15
         assert se5.fold(l1, 10) == 25
@@ -102,13 +104,13 @@ class TestFP:
 
     def test_ftuple_bind(self) -> None:
         """Test bind (flatmap)"""
-        ft = FT(*range(3, 101))
+        ft0 = FT(*range(3, 101))
         l1 = lambda x: 2 * x + 1
         l2 = lambda x: FT(*range(2, x + 1)).accummulate(lambda x, y: x + y)
-        ft1 = ft.map(l1)
-        ft2 = ft.bind(l2, FM.CONCAT)
-        ft3 = ft.bind(l2, FM.MERGE)
-        ft4 = ft.bind(l2, FM.EXHAUST)
+        ft1 = ft0.map(l1)
+        ft2 = ft0.bind(l2, FM.CONCAT)
+        ft3 = ft0.bind(l2, FM.MERGE)
+        ft4 = ft0.bind(l2, FM.EXHAUST)
         assert (ft1[0], ft1[1], ft1[2], ft1[-1]) == (7, 9, 11, 201)
         assert (ft2[0], ft2[1]) == (2, 5)
         assert (ft2[2], ft2[3], ft2[4]) == (2, 5, 9)
