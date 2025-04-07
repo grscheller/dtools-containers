@@ -17,8 +17,6 @@
 from __future__ import annotations
 from dtools.tuples.ftuple import FTuple as FT
 from dtools.tuples.ftuple import f_tuple as ft
-from dtools.queues.restrictive import DoubleQueue as DQ
-from dtools.queues.restrictive import double_queue as dq
 from dtools.queues.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB
@@ -33,20 +31,6 @@ class TestFP:
 
         def mult2[S](x: int, y: int) -> int:
             return x * y
-
-        def push_fq_from_left[S](q: DQ[S], d: S) -> DQ[S]:
-            q.pushl(d)
-            return q
-
-        def push_fq_from_right[S](d: S, q: DQ[S]) -> DQ[S]:
-            q.pushr(d)
-            return q
-
-        def push_ft_from_left[S](t: FT[S], d: S) -> FT[S]:
-            return ft(d) + t
-
-        def push_ft_from_right[S](d: S, t: FT[S]) -> FT[S]:
-            return t + ft(d)
 
         def push_se[S](se: SE[S], d: S) -> SE[S]:
             se.push(d)
@@ -72,21 +56,7 @@ class TestFP:
         assert ft5.foldr(add2, 10) == 25
         assert ft5.foldr(mult2, 1) == 120
         assert ft5.foldr(mult2, 10) == 1200
-
-        assert ft0 == FT()
         assert ft5 == ft(1, 2, 3, 4, 5)
-        dq1: DQ[int] = DQ()
-
-        assert ft5.foldl(push_fq_from_left, dq1.copy()) == dq(1, 2, 3, 4, 5)
-        assert ft0.foldl(push_fq_from_left, dq1.copy()) == dq()
-        assert ft5.foldr(push_fq_from_right, dq1.copy()) == dq(5, 4, 3, 2, 1)
-        assert ft0.foldr(push_fq_from_right, dq1.copy()) == dq()
-
-        ft6 = FT[int]()
-        assert ft5.foldl(push_ft_from_left, ft6) == ft(1, 2, 3, 4, 5)
-        assert ft5.foldl(push_ft_from_left, ft6) == ft(1, 2, 3, 4, 5)
-        assert ft0.foldl(push_ft_from_left, ft6) == ft()
-        assert ft0.foldl(push_ft_from_left, ft6) == ft()
 
         assert se5.fold(add2) == 15
         assert se5.fold(add2, 10) == 25

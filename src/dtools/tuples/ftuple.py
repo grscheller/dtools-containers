@@ -22,27 +22,30 @@ history is another example called a "process array" (parray) which I might
 return to someday. The idea of the parray is a fixed length sequence with
 sentinel values.
 
-#### FTuple and FT factory function.
+#### FTuple and f_tuple factory function.
 
-* class FTuple: Wrapped tuple with a Functional Programming API
-* function FE:
+- class FTuple
+  - wrapped tuple with a Functional Programming API
+- function f_tuple
+  - return an FTuple from multiple values
+  - like [] does for list or {} for set
 
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
-from typing import cast, Never, overload#, TypeVar
+from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['FTuple']
 
-# D = TypeVar('D')  # Hint for pdoc,
-# E = TypeVar('E')  # not needed for mypy or Python.
-# L = TypeVar('L')  # Uncomment these lines and
-# R = TypeVar('R')  # the "#, TypeVar" above
-# U = TypeVar('U')  #
-# T = TypeVar('T')  #
+D = TypeVar('D')  # Needed only for pdoc documentation generation.
+E = TypeVar('E')  # Otherwise, ignored by both MyPy and Python. Makes
+L = TypeVar('L')  # linters unhappy when these are used on function
+R = TypeVar('R')  # and method signatures due to "redefined-outer-name"
+U = TypeVar('U')  # warnings. Functions and methods signatures do not
+T = TypeVar('T')  # support variance and bounds constraints.
 
 
 class FTuple[D]():
@@ -61,7 +64,7 @@ class FTuple[D]():
 
     def __init__(self, *dss: Iterable[D]) -> None:
         if (size := len(dss)) <= 1:
-            self._ds: tuple[D, ...] = tuple(dss[0]) if size > 0 else tuple()
+            self._ds: tuple[D, ...] = tuple(dss[0]) if size == 1 else tuple()
         else:
             msg = f'FTuple expects at most 1 iterable argument, got {size}'
             #raise TypeError(msg)
@@ -109,8 +112,7 @@ class FTuple[D]():
         start: L | None = None,
         default: L | None = None,
     ) -> L | None:
-        """
-        **Fold Left**
+        """Fold Left
 
         * fold left with an optional starting value
         * first argument of function `f` is for the accumulated value
@@ -138,8 +140,7 @@ class FTuple[D]():
         start: R | None = None,
         default: R | None = None,
     ) -> R | None:
-        """
-        **Fold Right**
+        """Fold Right
 
         * fold right with an optional starting value
         * second argument of function `f` is for the accumulated value
@@ -179,8 +180,7 @@ class FTuple[D]():
     def accummulate[L](
         self, f: Callable[[L, D], L], s: L | None = None, /
     ) -> FTuple[L]:
-        """
-        **Accumulate partial folds**
+        """Accumulate partial folds
 
         Accumulate partial fold results in an FTuple with an optional starting
         value.
@@ -196,8 +196,7 @@ class FTuple[D]():
     def bind[U](
         self, f: Callable[[D], FTuple[U]], type: FM = FM.CONCAT, /
     ) -> FTuple[U] | Never:
-        """
-        Bind function `f` to the `FTuple`.
+        """Bind function `f` to the `FTuple`.
 
         * type = CONCAT: sequentially concatenate iterables one after the other
         * type = MERGE: merge iterables together until one is exhausted
@@ -211,8 +210,8 @@ class FTuple[D]():
                 return FTuple(merge(*map(f, self)))
             case FM.EXHAUST:
                 return FTuple(exhaust(*map(f, self)))
-            case '*':
-                raise ValueError('Unknown FM type')
+
+        raise ValueError('Unknown FM type')
 
 def f_tuple[T](*ts: T) -> FTuple[T]:
     """Return an `FTuple` from multiple values."""

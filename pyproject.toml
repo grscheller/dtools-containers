@@ -20,7 +20,7 @@ classifiers = [
     "Typing :: Typed"
 ]
 dependencies = [
-    "dtools.fp >= 1.5.1, < 1.6"
+    "dtools.fp >= 1.6.0, < 1.7"
 ]
 dynamic = ["version", "description"]
 keywords = [
@@ -30,7 +30,7 @@ keywords = [
 [project.optional-dependencies]
 test = [
     "pytest >=8.3.5",
-    "dtools.queues >=0.26.1, < 0.27"
+    "dtools.queues >=0.27.0, < 0.28"
 ]
 
 [project.urls]

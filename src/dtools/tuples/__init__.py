@@ -17,12 +17,14 @@
 
 #### Modules
 
-- *module* dtools.tuples.ftuples
-  - *class* FTuple: an immutable tuple-like data structure with functional interface
+##### *module* dtools.tuples.ftuples
+
+  - *class* dtools.tuples.ftuple.FTuple
+    - an immutable tuple-like data structure with functional interface
 
 """
 
-__version__ = '0.26.0.2'
+__version__ = '0.26.1.0'
 __author__ = 'Geoffrey R. Scheller'
 __copyright__ = 'Copyright (c) 2023-2025 Geoffrey R. Scheller'
 __license__ = 'Apache License 2.0'
