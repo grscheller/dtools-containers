@@ -3,10 +3,8 @@ requires = ["flit_core>=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "dtools.queues"
-authors = [
-    { name = "Geoffrey R. Scheller", email = "geoffrey@scheller.com" },
-]
+name = "dtools.tuples"
+authors = [{ name = "Geoffrey R. Scheller", email = "geoffrey@scheller.com" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.12"
@@ -17,21 +15,14 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.13",
-    "Typing :: Typed"
+    "Typing :: Typed",
 ]
-dependencies = [
-    "dtools.fp >= 1.6.0, < 1.7"
-]
+dependencies = ["dtools.fp >= 1.6.0, < 1.7"]
 dynamic = ["version", "description"]
-keywords = [
-    "tuple", "functional", "ftuple", "FTuple"
-] 
+keywords = ["tuple", "functional", "ftuple", "FTuple"]
 
 [project.optional-dependencies]
-test = [
-    "pytest >=8.3.5",
-    "dtools.queues >=0.27.0, < 0.28"
-]
+test = ["pytest >=8.3.5", "dtools.queues >=0.27.0, < 0.28"]
 
 [project.urls]
 Source = "https://github.com/grscheller/dtools-tuples"
@@ -40,6 +31,9 @@ Documentation = "https://grscheller.github.io/dtools-docs/tuples"
 
 [tool.flit.sdist]
 exclude = ["dist", "tests", ".gitignore", ".mypy_cache", ".pytest_cache"]
+
+[tool.pytest.ini_options]
+consider_namespace_packages = true
 
 [tool.pylsp-mypy]
 enabled = true
@@ -55,18 +49,15 @@ warn_redundant_casts = true
 warn_return_any = true
 warn_unused_configs = true
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-consider_namespace_packages = true
-
 [tool.ruff]
 target-version = "py313"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 
-[tool.ruff.format]
-quote-style = "single"
-
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-line-length = 72
