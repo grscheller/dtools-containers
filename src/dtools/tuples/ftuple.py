@@ -44,8 +44,8 @@ D = TypeVar('D')  # Needed only for pdoc documentation generation.
 E = TypeVar('E')  # Otherwise, ignored by both MyPy and Python. Makes
 L = TypeVar('L')  # linters unhappy when these are used on function
 R = TypeVar('R')  # and method signatures due to "redefined-outer-name"
-U = TypeVar('U')  # warnings. Functions and methods signatures do not
-T = TypeVar('T')  # support variance and bounds constraints.
+U = TypeVar('U')  # warnings because functions and methods signatures
+T = TypeVar('T')  # do not support variance and bounds constraints.
 
 
 class FTuple[D]():
@@ -198,9 +198,10 @@ class FTuple[D]():
     ) -> FTuple[U] | Never:
         """Bind function `f` to the `FTuple`.
 
-        * type = CONCAT: sequentially concatenate iterables one after the other
-        * type = MERGE: merge iterables together until one is exhausted
-        * type = Exhaust: merge iterables together until all are exhausted
+        * FM Enum types
+          * CONCAT: sequentially concatenate iterables one after the other
+          * MERGE: round-robin merge iterables until one is exhausted
+          * EXHAUST: round-robin merge iterables until all are exhausted
 
         """
         match type:
