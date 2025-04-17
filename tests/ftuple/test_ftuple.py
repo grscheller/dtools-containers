@@ -51,7 +51,7 @@ class TestFT:
         assert ft4 is not ft3
         assert MB.idx(ft1, 0).get(42) == 42
         assert str(XOR.idx(ft2, 42)) == str(XOR(MB(), MB(IndexError('tuple index out of range'))))
-        assert str(XOR.idx(ft2, 42).getRight().get()) == 'tuple index out of range'
+        assert str(XOR.idx(ft2, 42).get_right().get()) == 'tuple index out of range'
 
     def test_indexing(self) -> None:
         ft0: FT[str] = FT()

@@ -127,7 +127,7 @@ class FTuple[D]():
         else:
             if default is None:
                 msg = 'Both start and default cannot be None for an empty FTuple'
-                raise ValueError('FTuple.foldL - ' + msg)
+                raise ValueError('FTuple.foldl - ' + msg)
             acc = default
         for v in it:
             acc = f(acc, v)
