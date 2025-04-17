@@ -17,12 +17,22 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
-dependencies = ["dtools.fp >= 1.6.0, < 1.7"]
 dynamic = ["version", "description"]
-keywords = ["tuple", "functional", "ftuple", "FTuple"]
+keywords = [
+    "tuple",
+    "functional",
+    "ftuple",
+    "FTuple",
+]
+dependencies = [
+    "dtools.fp >= 1.7.0, < 1.8",
+]
 
 [project.optional-dependencies]
-test = ["pytest >=8.3.5", "dtools.queues >=0.27.0, < 0.28"]
+test = [
+    "pytest >=8.3.5",
+    "dtools.queues >=0.27.0, < 0.28",
+]
 
 [project.urls]
 Source = "https://github.com/grscheller/dtools-tuples"
