@@ -17,7 +17,7 @@
 from __future__ import annotations
 from dtools.tuples.ftuple import FTuple as FT
 from dtools.tuples.ftuple import f_tuple as ft
-from dtools.queues.splitends.splitend import SplitEnd as SE
+from dtools.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MB
 
