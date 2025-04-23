@@ -1,4 +1,4 @@
-# Developer Tools - queues useful for algorithms
+# Developer Tools - tuple based data structures
 
 Python package containing modules implementing queue-like data
 structures.

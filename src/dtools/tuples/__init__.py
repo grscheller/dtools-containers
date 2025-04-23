@@ -15,16 +15,21 @@
 """
 ### Developer Tools - Tuple-like data structures
 
-#### Modules
+Tuple based datastructures.
 
-##### *module* dtools.tuples.ftuples
+#### Functional tuples
 
+An immutable tuple-like data structure which wraps a builtin Python tuple in
+a "has-a" relationship.
+
+- *module* dtools.tuples
   - *class* dtools.tuples.ftuple.FTuple
-    - an immutable tuple-like data structure with functional interface
+
+---
 
 """
 
-__version__ = '0.27.0.1'
+__version__ = '0.27.1'
 __author__ = 'Geoffrey R. Scheller'
 __copyright__ = 'Copyright (c) 2023-2025 Geoffrey R. Scheller'
 __license__ = 'Apache License 2.0'

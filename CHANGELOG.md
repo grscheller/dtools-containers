@@ -9,6 +9,12 @@ PyPI dtools.tuples project.
 
 ## Releases and other important milestones
 
+### Version 0.27.1 - PyPI release date 2025-04-22
+
+- replaced camelCaseNames method names with snake_case_names
+- docstring changes
+- pyproject.toml standardization
+
 ### Version 0.27.0 - PyPI release date 2025-04-07
 
 - first PyPI release as dtools.tuples
