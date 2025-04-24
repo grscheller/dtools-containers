@@ -36,6 +36,7 @@ test = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/grscheller/dtools-docs"
 Source = "https://github.com/grscheller/dtools-tuples"
 Changelog = "https://github.com/grscheller/dtools-tuples/blob/main/CHANGELOG.md"
 Documentation = "https://grscheller.github.io/dtools-docs/tuples"
