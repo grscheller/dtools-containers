@@ -1,4 +1,4 @@
-# Copyright 2023-2024 Geoffrey R. Scheller
+# Copyright 2023-2025 Geoffrey R. Scheller
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,24 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-### Developer Tools - Tuple-like data structures
+"""### Developer Tools - Box-like data structures
 
-Tuple based datastructures.
-
-#### Functional tuples
-
-An immutable tuple-like data structure which wraps a builtin Python tuple in
-a "has-a" relationship.
-
-- *module* dtools.tuples
-  - *class* dtools.tuples.ftuple.FTuple
-
----
+- *module* dtools.containers.boxes: stateful containers
+  - *class* dtools.containers.boxes.Box: container holding at most 1 item
 
 """
 
-__version__ = '0.27.1'
 __author__ = 'Geoffrey R. Scheller'
 __copyright__ = 'Copyright (c) 2023-2025 Geoffrey R. Scheller'
 __license__ = 'Apache License 2.0'

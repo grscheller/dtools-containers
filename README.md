@@ -1,7 +1,6 @@
-# Developer Tools - tuple based data structures
+# Developer Tools - Container based data structures
 
-Python package containing modules implementing queue-like data
-structures.
+Python package of modules implementing container-like data structures.
 
 - **Repositories**
   - [dtools.tuples][1] project on *PyPI*
@@ -16,19 +15,26 @@ This project is part of the
 
 Tuple-based data structures.
 
+### Boxes
+
+- *module* `dtools.containers.boxes`
+  - *class** `Box`
+    - container that can contain 0 or 1 item of a given type
+    - stateful with a procedural interface
+
 ### Functional Tuples
 
 Data structures wrapping a Python tuple giving it a functional
 interface.
 
 - *module* `dtools.tuples.ftuples`
-  - *class* FTuple: Functional Tuple
+  - *class* `FTuple`: Functional Tuple
     - immutable tuple-like data structure
     - with a functional interface
 
 ______________________________________________________________________
 
-[1]: https://pypi.org/project/dtools.tuples/
-[2]: https://github.com/grscheller/dtools-tuples/
-[3]: https://grscheller.github.io/dtools-docs/tuples/
+[1]: https://pypi.org/project/dtools.containers/
+[2]: https://github.com/grscheller/dtools-containers/
+[3]: https://grscheller.github.io/dtools-docs/containers/
 [4]: https://github.com/grscheller/dtools-docs

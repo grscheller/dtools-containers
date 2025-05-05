@@ -13,10 +13,9 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.tuples.ftuple import FTuple as FT
-from dtools.tuples.ftuple import f_tuple as ft
+from dtools.containers.tuples.ftuple import FTuple as FT, f_tuple as ft
 from dtools.fp.iterables import FM
-from dtools.fp.err_handling import MB, XOR
+from dtools.fp.err_handling import MB, Xor, RIGHT
 
 class TestFT:
     """FTuple test suite"""
@@ -50,8 +49,8 @@ class TestFT:
         assert ft4 == ft3
         assert ft4 is not ft3
         assert MB.idx(ft1, 0).get(42) == 42
-        assert str(XOR.idx(ft2, 42)) == str(XOR(MB(), MB(IndexError('tuple index out of range'))))
-        assert str(XOR.idx(ft2, 42).get_right().get()) == 'tuple index out of range'
+        assert str(Xor.idx(ft2, 42)) == str(Xor(IndexError('tuple index out of range'), RIGHT))
+        assert str(Xor.idx(ft2, 42).get_right().get()) == 'tuple index out of range'
 
     def test_indexing(self) -> None:
         ft0: FT[str] = FT()
