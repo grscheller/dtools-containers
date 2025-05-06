@@ -18,7 +18,7 @@ from __future__ import annotations
 from dtools.containers.tuples.ftuple import FTuple as FT, f_tuple as ft
 from dtools.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
-from dtools.fp.err_handling import MB
+from dtools.fp.err_handling import MayBe as MB
 
 
 class TestFP:

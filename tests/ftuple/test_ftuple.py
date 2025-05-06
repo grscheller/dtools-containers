@@ -15,7 +15,8 @@
 from __future__ import annotations
 from dtools.containers.tuples.ftuple import FTuple as FT, f_tuple as ft
 from dtools.fp.iterables import FM
-from dtools.fp.err_handling import MB, Xor, RIGHT
+from dtools.fp.err_handling import MayBe as MB
+from dtools.fp.err_handling import Xor, RIGHT
 
 class TestFT:
     """FTuple test suite"""
