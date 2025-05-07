@@ -32,9 +32,7 @@ interface.
     - immutable tuple-like data structure
     - with a functional interface
 
-______________________________________________________________________
-
 [1]: https://pypi.org/project/dtools.containers/
 [2]: https://github.com/grscheller/dtools-containers/
 [3]: https://grscheller.github.io/dtools-docs/containers/
-[4]: https://github.com/grscheller/dtools-docs
+[4]: https://github.com/grscheller/dtools-docs/blob/main/README.md
