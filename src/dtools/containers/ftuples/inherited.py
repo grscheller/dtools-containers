@@ -28,17 +28,17 @@ Providing a FP interface for tuples. Implemented by inheriting from tuple.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Iterator
-from typing import cast, Never, overload, TypeVar
+from collections.abc import Callable, Iterator
+from typing import cast, Never, overload, TypeVar, reveal_type
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['ITuple', 'ituple']
 
-D = TypeVar('D')
-T = TypeVar('T')
+D = TypeVar('D', covariant=True)
+T = TypeVar('T', covariant=True)
 
 
-class ITuple[D]():
+class ITuple[D](tuple[D]):
     """
     #### Functional Tuple suitable for inheritance
 
@@ -56,49 +56,37 @@ class ITuple[D]():
     R = TypeVar('R')
     U = TypeVar('U')
 
- #   def __new__(cls) ...
- #
-    def __init__(self, *dss: Iterable[D]) -> None:
-        if (size := len(dss)) <= 1:
-            self._ds: tuple[D, ...] = tuple(dss[0]) if size == 1 else tuple()
-        else:
-            msg = f'ITuple expects at most 1 iterable argument, got {size}'
-            raise ValueError(msg)
-
-    def __iter__(self) -> Iterator[D]:
-        return iter(self._ds)
+    def __new__(cls, *ds: D) -> ITuple[D]:
+        """Construct the tuple from an interator"""
+        return super().__new__(cls, ds)
 
     def __reversed__(self) -> Iterator[D]:
-        return reversed(self._ds)
-
-    def __bool__(self) -> bool:
-        return bool(self._ds)
-
-    def __len__(self) -> int:
-        return len(self._ds)
+        for ii in range(len(self) - 1, -1, -1):
+            yield(self[ii])
 
     def __repr__(self) -> str:
-        return 'FT(' + ', '.join(map(repr, self)) + ')'
+        return f'{self.__class__.__name__}(' + ', '.join(map(repr, self)) + ')'
 
     def __str__(self) -> str:
-        return '((' + ', '.join(map(repr, self)) + '))'
+        return "((" + ", ".join(map(repr, self)) + "))"
 
     def __eq__(self, other: object, /) -> bool:
         if self is other:
             return True
-        if not isinstance(other, type(self)):
+        if not isinstance(other, ITuple):
             return False
-        return self._ds == other._ds
+        return self == other
 
     @overload
-    def __getitem__(self, idx: int, /) -> D: ...
+    def __getitem__(self, x: int) -> D | Never: ...
     @overload
-    def __getitem__(self, idx: slice, /) -> ITuple[D]: ...
+    def __getitem__(self, x: slice) -> ITuple[D]: ...
 
-    def __getitem__(self, idx: slice | int, /) -> ITuple[D] | D:
+    def __getitem__(self, idx: int | slice, /) -> ITuple[D] | D:
         if isinstance(idx, slice):
-            return ITuple(self._ds[idx])
-        return self._ds[idx]
+            return ITuple(*super().__getitem__(idx))
+        else:
+            return super().__getitem__(idx)
 
     def foldl[L](
         self,
@@ -114,7 +102,7 @@ class ITuple[D]():
         * throws `ValueError` when `ITuple` empty and a start value not given
 
         """
-        it = iter(self._ds)
+        it = iter(self)
         if start is not None:
             acc = start
         elif self:
@@ -142,7 +130,7 @@ class ITuple[D]():
         * throws `ValueError` when `ITuple` empty and a start value not given
 
         """
-        it = reversed(self._ds)
+        it = reversed(self)
         if start is not None:
             acc = start
         elif self:
@@ -160,17 +148,17 @@ class ITuple[D]():
         """Return a shallow copy of ITuple in O(1) time & space complexity."""
         return ITuple(self)
 
-    def __add__[E](self, other: ITuple[E], /) -> ITuple[D | E]:
+    def __add__(self, other: ITuple[D], /) -> ITuple[D]:
         if not isinstance(other, ITuple):
-            msg = 'Not an ITuple'
+            msg = 'ITuple being added to something not an ITuple'
             raise ValueError(msg)
         return ITuple(concat(self, other))
 
     def __mul__(self, num: int, /) -> ITuple[D]:
-        return ITuple(self._ds.__mul__(num if num > 0 else 0))
+        return ITuple(*super().__mul__(num))
 
     def __rmul__(self, num: int, /) -> ITuple[D]:
-        return ITuple(self._ds.__mul__(num if num > 0 else 0))
+        return ITuple(*super().__rmul__(num))
 
     def accummulate[L](
         self, f: Callable[[L, D], L], s: L | None = None, /
