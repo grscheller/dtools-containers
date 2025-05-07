@@ -15,14 +15,14 @@
 """Test FP use cases"""
 
 from __future__ import annotations
-from dtools.containers.tuples.ftuple import FTuple as FT, f_tuple as ft
+from dtools.containers.ftuples.hftuple import HFTuple as HFT, hftuple as hft
 from dtools.splitends.splitend import SplitEnd as SE
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MayBe as MB
 
 
 class TestFP:
-    """FP test of FTuple with other datastructures"""
+    """FP test of HFTuple with other datastructures"""
     def test_fold(self) -> None:
         """Test folding"""
         def add2(x: int, y: int) -> int:
@@ -35,27 +35,27 @@ class TestFP:
             se.push(d)
             return se
 
-        ft0: FT[int] = FT()
-        ft5: FT[int] = ft(1, 2, 3, 4, 5)
+        hft0: HFT[int] = HFT()
+        hft5: HFT[int] = hft(1, 2, 3, 4, 5)
         se5 = SE(1, 2, 3, 4, 5)
 
         assert se5.peak() == 5
-        assert ft5[1] == 2
-        assert ft5[4] == 5
+        assert hft5[1] == 2
+        assert hft5[4] == 5
 
-        assert ft0.foldl(add2, 42) == 42
-        assert ft0.foldr(add2, 42) == 42
-        assert ft5.foldl(add2) == 15
-        assert ft5.foldl(add2, 0) == 15
-        assert ft5.foldl(add2, 10) == 25
-        assert ft5.foldl(mult2, 1) == 120
-        assert ft5.foldl(mult2, 10) == 1200
-        assert ft5.foldr(add2) == 15
-        assert ft5.foldr(add2, 0) == 15
-        assert ft5.foldr(add2, 10) == 25
-        assert ft5.foldr(mult2, 1) == 120
-        assert ft5.foldr(mult2, 10) == 1200
-        assert ft5 == ft(1, 2, 3, 4, 5)
+        assert hft0.foldl(add2, 42) == 42
+        assert hft0.foldr(add2, 42) == 42
+        assert hft5.foldl(add2) == 15
+        assert hft5.foldl(add2, 0) == 15
+        assert hft5.foldl(add2, 10) == 25
+        assert hft5.foldl(mult2, 1) == 120
+        assert hft5.foldl(mult2, 10) == 1200
+        assert hft5.foldr(add2) == 15
+        assert hft5.foldr(add2, 0) == 15
+        assert hft5.foldr(add2, 10) == 25
+        assert hft5.foldr(mult2, 1) == 120
+        assert hft5.foldr(mult2, 10) == 1200
+        assert hft5 == hft(1, 2, 3, 4, 5)
 
         assert se5.fold(add2) == 15
         assert se5.fold(add2, 10) == 25
@@ -68,39 +68,39 @@ class TestFP:
         assert se5.fold(add2) == 15
         assert se5.fold(add2, 10) == 25
 
-        assert ft5.accummulate(add2) == ft(1, 3, 6, 10, 15)
-        assert ft5.accummulate(add2, 10) == ft(10, 11, 13, 16, 20, 25)
-        assert ft5.accummulate(mult2) == ft(1, 2, 6, 24, 120)
-        assert ft0.accummulate(add2) == FT()
-        assert ft0.accummulate(mult2) == FT()
+        assert hft5.accummulate(add2) == hft(1, 3, 6, 10, 15)
+        assert hft5.accummulate(add2, 10) == hft(10, 11, 13, 16, 20, 25)
+        assert hft5.accummulate(mult2) == hft(1, 2, 6, 24, 120)
+        assert hft0.accummulate(add2) == HFT()
+        assert hft0.accummulate(mult2) == HFT()
 
-    def test_ftuple_bind(self) -> None:
+    def test_hftuple_bind(self) -> None:
         """Test bind (flatmap)"""
-        ft0 = FT(range(3, 101))
+        hft0 = HFT(range(3, 101))
         l1 = lambda x: 2 * x + 1
-        l2 = lambda x: FT(range(2, x + 1)).accummulate(lambda x, y: x + y)
-        ft1 = ft0.map(l1)
-        ft2 = ft0.bind(l2, FM.CONCAT)
-        ft3 = ft0.bind(l2, FM.MERGE)
-        ft4 = ft0.bind(l2, FM.EXHAUST)
-        assert (ft1[0], ft1[1], ft1[2], ft1[-1]) == (7, 9, 11, 201)
-        assert (ft2[0], ft2[1]) == (2, 5)
-        assert (ft2[2], ft2[3], ft2[4]) == (2, 5, 9)
-        assert (ft2[5], ft2[6], ft2[7], ft2[8]) == (2, 5, 9, 14)
-        assert ft2[-1] == ft2[4948] == 5049
-        assert MB.idx(ft2, -1).get(42) == ft2[4948] == 5049
-        assert MB.idx(ft2, 4949) == MB()
-        assert (ft3[0], ft3[1]) == (2, 2)
-        assert (ft3[2], ft3[3]) == (2, 2)
-        assert (ft3[4], ft3[5]) == (2, 2)
-        assert (ft3[96], ft3[97]) == (2, 2)
-        assert (ft3[98], ft3[99]) == (5, 5)
-        assert MB.idx(ft3, 196) == MB()
-        assert (ft4[0], ft4[1], ft4[2]) == (2, 2, 2)
-        assert (ft4[95], ft4[96], ft4[97]) == (2, 2, 2)
-        assert (ft4[98], ft4[99], ft4[100]) == (5, 5, 5)
-        assert (ft4[290], ft4[291], ft4[292]) == (9, 9, 9)
-        assert (ft4[293], ft4[294], ft4[295]) == (14, 14, 14)
-        assert (ft4[-4], ft4[-3], ft4[-2], ft4[-1]) == (4850, 4949, 4949, 5049)
-        assert ft4[-1] == ft4[4948] == 5049
-        assert MB.idx(ft2, 4949) == MB()
+        l2 = lambda x: HFT(range(2, x + 1)).accummulate(lambda x, y: x + y)
+        hft1 = hft0.map(l1)
+        hft2 = hft0.bind(l2, FM.CONCAT)
+        hft3 = hft0.bind(l2, FM.MERGE)
+        hft4 = hft0.bind(l2, FM.EXHAUST)
+        assert (hft1[0], hft1[1], hft1[2], hft1[-1]) == (7, 9, 11, 201)
+        assert (hft2[0], hft2[1]) == (2, 5)
+        assert (hft2[2], hft2[3], hft2[4]) == (2, 5, 9)
+        assert (hft2[5], hft2[6], hft2[7], hft2[8]) == (2, 5, 9, 14)
+        assert hft2[-1] == hft2[4948] == 5049
+        assert MB.idx(hft2, -1).get(42) == hft2[4948] == 5049
+        assert MB.idx(hft2, 4949) == MB()
+        assert (hft3[0], hft3[1]) == (2, 2)
+        assert (hft3[2], hft3[3]) == (2, 2)
+        assert (hft3[4], hft3[5]) == (2, 2)
+        assert (hft3[96], hft3[97]) == (2, 2)
+        assert (hft3[98], hft3[99]) == (5, 5)
+        assert MB.idx(hft3, 196) == MB()
+        assert (hft4[0], hft4[1], hft4[2]) == (2, 2, 2)
+        assert (hft4[95], hft4[96], hft4[97]) == (2, 2, 2)
+        assert (hft4[98], hft4[99], hft4[100]) == (5, 5, 5)
+        assert (hft4[290], hft4[291], hft4[292]) == (9, 9, 9)
+        assert (hft4[293], hft4[294], hft4[295]) == (14, 14, 14)
+        assert (hft4[-4], hft4[-3], hft4[-2], hft4[-1]) == (4850, 4949, 4949, 5049)
+        assert hft4[-1] == hft4[4948] == 5049
+        assert MB.idx(hft2, 4949) == MB()

@@ -13,22 +13,16 @@
 # limitations under the License.
 
 """
-### Tuple based data structures
+### dtools.containers.ftuples.iftuples
 
-Only example here is the ftuple, basically an FP interface wrapping a tuple.
-Originally it inherited from tuple, but I found containing the tuple in a
-"has-a" relationship makes for a faster implementation. Buried in the git
-history is another example called a "process array" (parray) which I might
-return to someday. The idea of the parray is a fixed length sequence with
-sentinel values.
+Providing a FP interface for tuples.
 
-#### FTuple and f_tuple factory function.
-
-- class FTuple
-  - wrapped tuple with a Functional Programming API
-- function f_tuple
-  - return an FTuple from multiple values
-  - like [] does for list or {} for set
+- class `IFTuple`
+  - inherits from tuple with a "is-a" implemetation
+    - intended to be further inherited
+    - unslotted 
+  - function `iftuple`
+    - return an IFTuple from multiple values
 
 """
 
@@ -38,35 +32,35 @@ from collections.abc import Callable, Iterable, Iterator
 from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
-__all__ = ['FTuple']
+__all__ = ['IFTuple']
 
-D = TypeVar('D')  # Needed only for pdoc documentation generation.
-E = TypeVar('E')  # Otherwise, ignored by both MyPy and Python. Makes
-L = TypeVar('L')  # linters unhappy when these are used on function
-R = TypeVar('R')  # and method signatures due to "redefined-outer-name"
-U = TypeVar('U')  # warnings because functions and methods signatures
-T = TypeVar('T')  # do not support variance and bounds constraints.
+D = TypeVar('D')
+T = TypeVar('T')
 
 
-class FTuple[D]():
+class IFTuple[D]():
     """
     #### Functional Tuple
 
     * immutable tuple-like data structure with a functional interface
     * supports both indexing and slicing
-    * `FTuple` addition & `int` multiplication supported
+    * `IFTuple` addition & `int` multiplication supported
       * addition concatenates results, resulting type a Union type
       * both left and right int multiplication supported
 
     """
+    E = TypeVar('E')
+    L = TypeVar('L')
+    R = TypeVar('R')
+    U = TypeVar('U')
 
-    __slots__ = ('_ds',)
-
+ #   def __new__(cls) ...
+ #
     def __init__(self, *dss: Iterable[D]) -> None:
         if (size := len(dss)) <= 1:
             self._ds: tuple[D, ...] = tuple(dss[0]) if size == 1 else tuple()
         else:
-            msg = f'FTuple expects at most 1 iterable argument, got {size}'
+            msg = f'IFTuple expects at most 1 iterable argument, got {size}'
             #raise TypeError(msg)
             raise ValueError(msg)
 
@@ -98,11 +92,11 @@ class FTuple[D]():
     @overload
     def __getitem__(self, idx: int, /) -> D: ...
     @overload
-    def __getitem__(self, idx: slice, /) -> FTuple[D]: ...
+    def __getitem__(self, idx: slice, /) -> IFTuple[D]: ...
 
-    def __getitem__(self, idx: slice | int, /) -> FTuple[D] | D:
+    def __getitem__(self, idx: slice | int, /) -> IFTuple[D] | D:
         if isinstance(idx, slice):
-            return FTuple(self._ds[idx])
+            return IFTuple(self._ds[idx])
         return self._ds[idx]
 
     def foldl[L](
@@ -116,7 +110,7 @@ class FTuple[D]():
 
         * fold left with an optional starting value
         * first argument of function `f` is for the accumulated value
-        * throws `ValueError` when `FTuple` empty and a start value not given
+        * throws `ValueError` when `IFTuple` empty and a start value not given
 
         """
         it = iter(self._ds)
@@ -126,8 +120,8 @@ class FTuple[D]():
             acc = cast(L, next(it))  # L = D in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty FTuple'
-                raise ValueError('FTuple.foldl - ' + msg)
+                msg = 'Both start and default cannot be None for an empty IFTuple'
+                raise ValueError('IFTuple.foldl - ' + msg)
             acc = default
         for v in it:
             acc = f(acc, v)
@@ -144,7 +138,7 @@ class FTuple[D]():
 
         * fold right with an optional starting value
         * second argument of function `f` is for the accumulated value
-        * throws `ValueError` when `FTuple` empty and a start value not given
+        * throws `ValueError` when `IFTuple` empty and a start value not given
 
         """
         it = reversed(self._ds)
@@ -154,49 +148,49 @@ class FTuple[D]():
             acc = cast(R, next(it))  # R = D in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty FTuple'
-                raise ValueError('FTuple.foldR - ' + msg)
+                msg = 'Both start and default cannot be None for an empty IFTuple'
+                raise ValueError('IFTuple.foldR - ' + msg)
             acc = default
         for v in it:
             acc = f(v, acc)
         return acc
 
-    def copy(self) -> FTuple[D]:
-        """Return a shallow copy of FTuple in O(1) time & space complexity."""
-        return FTuple(self)
+    def copy(self) -> IFTuple[D]:
+        """Return a shallow copy of IFTuple in O(1) time & space complexity."""
+        return IFTuple(self)
 
-    def __add__[E](self, other: FTuple[E], /) -> FTuple[D | E]:
-        if not isinstance(other, FTuple):
-            msg = 'Not an FTuple'
+    def __add__[E](self, other: IFTuple[E], /) -> IFTuple[D | E]:
+        if not isinstance(other, IFTuple):
+            msg = 'Not an IFTuple'
             raise ValueError(msg)
-        return FTuple(concat(self, other))
+        return IFTuple(concat(self, other))
 
-    def __mul__(self, num: int, /) -> FTuple[D]:
-        return FTuple(self._ds.__mul__(num if num > 0 else 0))
+    def __mul__(self, num: int, /) -> IFTuple[D]:
+        return IFTuple(self._ds.__mul__(num if num > 0 else 0))
 
-    def __rmul__(self, num: int, /) -> FTuple[D]:
-        return FTuple(self._ds.__mul__(num if num > 0 else 0))
+    def __rmul__(self, num: int, /) -> IFTuple[D]:
+        return IFTuple(self._ds.__mul__(num if num > 0 else 0))
 
     def accummulate[L](
         self, f: Callable[[L, D], L], s: L | None = None, /
-    ) -> FTuple[L]:
+    ) -> IFTuple[L]:
         """Accumulate partial folds
 
-        Accumulate partial fold results in an FTuple with an optional starting
+        Accumulate partial fold results in an IFTuple with an optional starting
         value.
 
         """
         if s is None:
-            return FTuple(accumulate(self, f))
-        return FTuple(accumulate(self, f, s))
+            return IFTuple(accumulate(self, f))
+        return IFTuple(accumulate(self, f, s))
 
-    def map[U](self, f: Callable[[D], U], /) -> FTuple[U]:
-        return FTuple(map(f, self))
+    def map[U](self, f: Callable[[D], U], /) -> IFTuple[U]:
+        return IFTuple(map(f, self))
 
     def bind[U](
-        self, f: Callable[[D], FTuple[U]], type: FM = FM.CONCAT, /
-    ) -> FTuple[U] | Never:
-        """Bind function `f` to the `FTuple`.
+        self, f: Callable[[D], IFTuple[U]], type: FM = FM.CONCAT, /
+    ) -> IFTuple[U] | Never:
+        """Bind function `f` to the `IFTuple`.
 
         * FM Enum types
           * CONCAT: sequentially concatenate iterables one after the other
@@ -206,14 +200,14 @@ class FTuple[D]():
         """
         match type:
             case FM.CONCAT:
-                return FTuple(concat(*map(f, self)))
+                return IFTuple(concat(*map(f, self)))
             case FM.MERGE:
-                return FTuple(merge(*map(f, self)))
+                return IFTuple(merge(*map(f, self)))
             case FM.EXHAUST:
-                return FTuple(exhaust(*map(f, self)))
+                return IFTuple(exhaust(*map(f, self)))
 
         raise ValueError('Unknown FM type')
 
-def f_tuple[T](*ts: T) -> FTuple[T]:
-    """Return an `FTuple` from multiple values."""
-    return FTuple(ts)
+def iftuple[T](*ts: T) -> IFTuple[T]:
+    """Return an `IFTuple` from multiple values."""
+    return IFTuple(ts)

@@ -4,8 +4,8 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "dtools.tuples"
-authors = [{ name = "Geoffrey R. Scheller", email = "geoffrey@scheller.com" }]
 version = "0.28.0"
+authors = [{ name = "Geoffrey R. Scheller", email = "geoffrey@scheller.com" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.12"

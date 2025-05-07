@@ -15,10 +15,11 @@
 """### Developer Tools - Container-like data structures
 
 - *package* dtools.containers: Container-like data structures
-  - *module* dtools.containers.boxes: stateful containers 
-    - *class* dtools.containers.boxes.Box: container holding at most 1 item
+  - *module* boxes: stateful containers 
+    - *module* box: container holding at most 1 item
   - *module* dtools.containers.tuples: tuple-like data structures
-    - *class* dtools.containers.tuples.Ftuple: functional tuple
+    - *module* htuple: functional tuple ("has-a" implementation)
+    - *module* ituple: functional tuple ("is-a" implementation) <- TODO
 
 """
 

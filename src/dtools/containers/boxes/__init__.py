@@ -14,11 +14,7 @@
 
 """### Developer Tools - Box-like data structures
 
-- *module* dtools.containers.boxes: stateful containers
-  - *class* dtools.containers.boxes.Box: container holding at most 1 item
+- *module* boxes: stateful containers
+  - *class* Box: for a stateful container holding at most 1 item
 
 """
-
-__author__ = 'Geoffrey R. Scheller'
-__copyright__ = 'Copyright (c) 2023-2025 Geoffrey R. Scheller'
-__license__ = 'Apache License 2.0'

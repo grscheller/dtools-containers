@@ -12,12 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""### Module dtools.containers. - monadic error handling
+"""### dtools.containers.boxes.box
 
-Functional data types to use in lieu of exceptions.
-
-- *class* Box: statefule container of at one most object of a given type
-
+Stateful container holding at most one item.
 """
 
 from __future__ import annotations
@@ -48,9 +45,7 @@ class Box[D]:
     __slots__ = ('_item',)
     __match_args__ = ('_item',)
 
-    T = TypeVar('T')
     U = TypeVar('U')
-    V = TypeVar('V')
 
     @overload
     def __init__(self) -> None: ...
@@ -110,7 +105,7 @@ class Box[D]:
     def put(self, item: D) -> None:
         """Put a value in the Box if empty, if not empty do nothing.
 
-        - Warning: raises `ValueError` if box is not empty
+        - raises `ValueError` if box is not empty
 
         """
         if self._item is Sentinel('Box'):
@@ -122,7 +117,7 @@ class Box[D]:
     def pop(self) -> D | Never:
         """Pop the value if the Box is not empty.
 
-        - Warning: raises `ValueError` if box is empty
+        - raises `ValueError` if box is empty
 
         """
         _sentinel: Final[Sentinel] = Sentinel('Box')
@@ -134,13 +129,13 @@ class Box[D]:
         return popped
 
     def map[U](self, f: Callable[[D], U]) -> Box[U]:
-        """Map function `f` over contents."""
+        """Map function `f` over contents. Return new instance."""
         if self._item is Sentinel('Box'):
             return Box()
         return Box(f(cast(D, self._item)))
 
     def bind[U](self, f: Callable[[D], Box[U]]) -> Box[U]:
-        """Map `Box` with function `f` and flatten."""
+        """Flatmap `Box` with function `f`. Return new instance."""
         if self._item is Sentinel('Box'):
             return Box()
         return f(cast(D, self._item))

@@ -18,7 +18,7 @@ Tuple-based data structures.
 ### Boxes
 
 - *module* `dtools.containers.boxes`
-  - *class** `Box`
+  - *module* `box`: Holds an item `Box`
     - container that can contain 0 or 1 item of a given type
     - stateful with a procedural interface
 
@@ -27,10 +27,10 @@ Tuple-based data structures.
 Data structures wrapping a Python tuple giving it a functional
 interface.
 
-- *module* `dtools.tuples.ftuples`
-  - *class* `FTuple`: Functional Tuple
-    - immutable tuple-like data structure
-    - with a functional interface
+- *module* `dtools.containers.ftuples`
+    - immutable tuple-like data structure with a functional interface
+      - *module* `hftuple` implements class `HFTuple` "has-a" tuple
+      - *module* `iftuple` implements class `IFTuple` "is-a" tuple
 
 [1]: https://pypi.org/project/dtools.containers/
 [2]: https://github.com/grscheller/dtools-containers/

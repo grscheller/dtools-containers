@@ -16,14 +16,10 @@
 ### Developer Tools - Tuple-based data structures
 
 - *module* dtools.containers.tuples: functional interfaces for tuples
-  - *class* dtools.containers.tuples.FTuples: "has-a" implemention
-  - *class* dtools.containers.tuples.ITuples: inherits from tuple (TODO)
+  - *module* htuple: functional tuple ("has-a" implementation)
+  - *module* ituple: inherits from tuple ("is-a" implementation)
     - TODO: pull out a past implementation from Git history
 
 ---
 
 """
-
-__author__ = 'Geoffrey R. Scheller'
-__copyright__ = 'Copyright (c) 2023-2025 Geoffrey R. Scheller'
-__license__ = 'Apache License 2.0'
