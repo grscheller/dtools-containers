@@ -13,16 +13,17 @@
 # limitations under the License.
 
 """
-### dtools.containers.ftuples.iftuples
+### dtools.containers.ftuples.wrapped
 
-Providing a FP interface for tuples.
+Providing FP interfaces for tuples. Implemented with a wrapped tuple.
 
-- class `IFTuple`
-  - inherits from tuple with a "is-a" implemetation
-    - intended to be further inherited
-    - unslotted 
-  - function `iftuple`
-    - return an IFTuple from multiple values
+- class `WTuple`
+  - wrapped tuple with a "has-a" implementation
+    - intended to be a "better" tuple
+    - not intended to be inherited from
+    - slotted 
+  - function `wtuple`
+    - return an WTuple from function's arguments
 
 """
 
@@ -32,36 +33,37 @@ from collections.abc import Callable, Iterable, Iterator
 from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
-__all__ = ['IFTuple']
+__all__ = ['WTuple', 'wtuple']
 
 D = TypeVar('D')
 T = TypeVar('T')
 
 
-class IFTuple[D]():
+class WTuple[D]():
     """
-    #### Functional Tuple
+    #### Functional Tuple giving a tuple a more FP API
 
     * immutable tuple-like data structure with a functional interface
     * supports both indexing and slicing
-    * `IFTuple` addition & `int` multiplication supported
+    * `WTuple` addition & `int` multiplication supported
       * addition concatenates results, resulting type a Union type
       * both left and right int multiplication supported
 
     """
+
+    __slots__ = ('_ds',)
+
     E = TypeVar('E')
     L = TypeVar('L')
     R = TypeVar('R')
     U = TypeVar('U')
 
- #   def __new__(cls) ...
- #
+
     def __init__(self, *dss: Iterable[D]) -> None:
         if (size := len(dss)) <= 1:
             self._ds: tuple[D, ...] = tuple(dss[0]) if size == 1 else tuple()
         else:
-            msg = f'IFTuple expects at most 1 iterable argument, got {size}'
-            #raise TypeError(msg)
+            msg = f'WTuple expects at most 1 iterable argument, got {size}'
             raise ValueError(msg)
 
     def __iter__(self) -> Iterator[D]:
@@ -92,11 +94,11 @@ class IFTuple[D]():
     @overload
     def __getitem__(self, idx: int, /) -> D: ...
     @overload
-    def __getitem__(self, idx: slice, /) -> IFTuple[D]: ...
+    def __getitem__(self, idx: slice, /) -> WTuple[D]: ...
 
-    def __getitem__(self, idx: slice | int, /) -> IFTuple[D] | D:
+    def __getitem__(self, idx: slice | int, /) -> WTuple[D] | D:
         if isinstance(idx, slice):
-            return IFTuple(self._ds[idx])
+            return WTuple(self._ds[idx])
         return self._ds[idx]
 
     def foldl[L](
@@ -110,7 +112,7 @@ class IFTuple[D]():
 
         * fold left with an optional starting value
         * first argument of function `f` is for the accumulated value
-        * throws `ValueError` when `IFTuple` empty and a start value not given
+        * throws `ValueError` when `WTuple` empty and a start value not given
 
         """
         it = iter(self._ds)
@@ -120,8 +122,8 @@ class IFTuple[D]():
             acc = cast(L, next(it))  # L = D in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty IFTuple'
-                raise ValueError('IFTuple.foldl - ' + msg)
+                msg = 'Both start and default cannot be None for an empty WTuple'
+                raise ValueError('WTuple.foldl - ' + msg)
             acc = default
         for v in it:
             acc = f(acc, v)
@@ -138,7 +140,7 @@ class IFTuple[D]():
 
         * fold right with an optional starting value
         * second argument of function `f` is for the accumulated value
-        * throws `ValueError` when `IFTuple` empty and a start value not given
+        * throws `ValueError` when `WTuple` empty and a start value not given
 
         """
         it = reversed(self._ds)
@@ -148,49 +150,49 @@ class IFTuple[D]():
             acc = cast(R, next(it))  # R = D in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty IFTuple'
-                raise ValueError('IFTuple.foldR - ' + msg)
+                msg = 'Both start and default cannot be None for an empty WTuple'
+                raise ValueError('WTuple.foldR - ' + msg)
             acc = default
         for v in it:
             acc = f(v, acc)
         return acc
 
-    def copy(self) -> IFTuple[D]:
-        """Return a shallow copy of IFTuple in O(1) time & space complexity."""
-        return IFTuple(self)
+    def copy(self) -> WTuple[D]:
+        """Return a shallow copy of WTuple in O(1) time & space complexity."""
+        return WTuple(self)
 
-    def __add__[E](self, other: IFTuple[E], /) -> IFTuple[D | E]:
-        if not isinstance(other, IFTuple):
-            msg = 'Not an IFTuple'
+    def __add__[E](self, other: WTuple[E], /) -> WTuple[D | E]:
+        if not isinstance(other, WTuple):
+            msg = 'Not an WTuple'
             raise ValueError(msg)
-        return IFTuple(concat(self, other))
+        return WTuple(concat(self, other))
 
-    def __mul__(self, num: int, /) -> IFTuple[D]:
-        return IFTuple(self._ds.__mul__(num if num > 0 else 0))
+    def __mul__(self, num: int, /) -> WTuple[D]:
+        return WTuple(self._ds.__mul__(num if num > 0 else 0))
 
-    def __rmul__(self, num: int, /) -> IFTuple[D]:
-        return IFTuple(self._ds.__mul__(num if num > 0 else 0))
+    def __rmul__(self, num: int, /) -> WTuple[D]:
+        return WTuple(self._ds.__mul__(num if num > 0 else 0))
 
     def accummulate[L](
         self, f: Callable[[L, D], L], s: L | None = None, /
-    ) -> IFTuple[L]:
+    ) -> WTuple[L]:
         """Accumulate partial folds
 
-        Accumulate partial fold results in an IFTuple with an optional starting
+        Accumulate partial fold results in an WTuple with an optional starting
         value.
 
         """
         if s is None:
-            return IFTuple(accumulate(self, f))
-        return IFTuple(accumulate(self, f, s))
+            return WTuple(accumulate(self, f))
+        return WTuple(accumulate(self, f, s))
 
-    def map[U](self, f: Callable[[D], U], /) -> IFTuple[U]:
-        return IFTuple(map(f, self))
+    def map[U](self, f: Callable[[D], U], /) -> WTuple[U]:
+        return WTuple(map(f, self))
 
     def bind[U](
-        self, f: Callable[[D], IFTuple[U]], type: FM = FM.CONCAT, /
-    ) -> IFTuple[U] | Never:
-        """Bind function `f` to the `IFTuple`.
+        self, f: Callable[[D], WTuple[U]], type: FM = FM.CONCAT, /
+    ) -> WTuple[U] | Never:
+        """Bind function `f` to the `WTuple`.
 
         * FM Enum types
           * CONCAT: sequentially concatenate iterables one after the other
@@ -200,14 +202,14 @@ class IFTuple[D]():
         """
         match type:
             case FM.CONCAT:
-                return IFTuple(concat(*map(f, self)))
+                return WTuple(concat(*map(f, self)))
             case FM.MERGE:
-                return IFTuple(merge(*map(f, self)))
+                return WTuple(merge(*map(f, self)))
             case FM.EXHAUST:
-                return IFTuple(exhaust(*map(f, self)))
+                return WTuple(exhaust(*map(f, self)))
 
         raise ValueError('Unknown FM type')
 
-def iftuple[T](*ts: T) -> IFTuple[T]:
-    """Return an `IFTuple` from multiple values."""
-    return IFTuple(ts)
+def wtuple[T](*ts: T) -> WTuple[T]:
+    """Return an `WTuple` from multiple values."""
+    return WTuple(ts)

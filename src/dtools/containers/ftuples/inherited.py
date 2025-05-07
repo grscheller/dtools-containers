@@ -13,16 +13,16 @@
 # limitations under the License.
 
 """
-### dtools.containers.tuples.hftuples
+### dtools.containers.ftuples.wrapped
 
-Providing FP interfaces for tuples.
+Providing a FP interface for tuples. Implemented by inheriting from tuple.
 
-- class `HFTuple`
-  - wrapped tuple with a "has-a" implementation
-    - intended to be a "better" tuple
-    - slotted 
-  - function `hftuple`
-    - return an HFTuple from multiple values
+- class `ITuple`
+  - inherits from tuple with an "is-a" implementation
+    - intended to be further inherited
+    - unslotted 
+  - function `ituple`
+    - return an ITuple from function's arguments
 
 """
 
@@ -32,38 +32,37 @@ from collections.abc import Callable, Iterable, Iterator
 from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
-__all__ = ['HFTuple', 'hftuple']
+__all__ = ['ITuple', 'ituple']
 
 D = TypeVar('D')
 T = TypeVar('T')
 
 
-class HFTuple[D]():
+class ITuple[D]():
     """
-    #### Functional Tuple
+    #### Functional Tuple suitable for inheritance
+
+    TODO: replace this from one I have in my GIT history
 
     * immutable tuple-like data structure with a functional interface
     * supports both indexing and slicing
-    * `HFTuple` addition & `int` multiplication supported
+    * `ITuple` addition & `int` multiplication supported
       * addition concatenates results, resulting type a Union type
       * both left and right int multiplication supported
 
     """
-
-    __slots__ = ('_ds',)
-
     E = TypeVar('E')
     L = TypeVar('L')
     R = TypeVar('R')
     U = TypeVar('U')
 
-
+ #   def __new__(cls) ...
+ #
     def __init__(self, *dss: Iterable[D]) -> None:
         if (size := len(dss)) <= 1:
             self._ds: tuple[D, ...] = tuple(dss[0]) if size == 1 else tuple()
         else:
-            msg = f'HFTuple expects at most 1 iterable argument, got {size}'
-            #raise TypeError(msg)
+            msg = f'ITuple expects at most 1 iterable argument, got {size}'
             raise ValueError(msg)
 
     def __iter__(self) -> Iterator[D]:
@@ -94,11 +93,11 @@ class HFTuple[D]():
     @overload
     def __getitem__(self, idx: int, /) -> D: ...
     @overload
-    def __getitem__(self, idx: slice, /) -> HFTuple[D]: ...
+    def __getitem__(self, idx: slice, /) -> ITuple[D]: ...
 
-    def __getitem__(self, idx: slice | int, /) -> HFTuple[D] | D:
+    def __getitem__(self, idx: slice | int, /) -> ITuple[D] | D:
         if isinstance(idx, slice):
-            return HFTuple(self._ds[idx])
+            return ITuple(self._ds[idx])
         return self._ds[idx]
 
     def foldl[L](
@@ -112,7 +111,7 @@ class HFTuple[D]():
 
         * fold left with an optional starting value
         * first argument of function `f` is for the accumulated value
-        * throws `ValueError` when `HFTuple` empty and a start value not given
+        * throws `ValueError` when `ITuple` empty and a start value not given
 
         """
         it = iter(self._ds)
@@ -122,8 +121,8 @@ class HFTuple[D]():
             acc = cast(L, next(it))  # L = D in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty HFTuple'
-                raise ValueError('HFTuple.foldl - ' + msg)
+                msg = 'Both start and default cannot be None for an empty ITuple'
+                raise ValueError('ITuple.foldl - ' + msg)
             acc = default
         for v in it:
             acc = f(acc, v)
@@ -140,7 +139,7 @@ class HFTuple[D]():
 
         * fold right with an optional starting value
         * second argument of function `f` is for the accumulated value
-        * throws `ValueError` when `HFTuple` empty and a start value not given
+        * throws `ValueError` when `ITuple` empty and a start value not given
 
         """
         it = reversed(self._ds)
@@ -150,49 +149,49 @@ class HFTuple[D]():
             acc = cast(R, next(it))  # R = D in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty HFTuple'
-                raise ValueError('HFTuple.foldR - ' + msg)
+                msg = 'Both start and default cannot be None for an empty ITuple'
+                raise ValueError('ITuple.foldR - ' + msg)
             acc = default
         for v in it:
             acc = f(v, acc)
         return acc
 
-    def copy(self) -> HFTuple[D]:
-        """Return a shallow copy of HFTuple in O(1) time & space complexity."""
-        return HFTuple(self)
+    def copy(self) -> ITuple[D]:
+        """Return a shallow copy of ITuple in O(1) time & space complexity."""
+        return ITuple(self)
 
-    def __add__[E](self, other: HFTuple[E], /) -> HFTuple[D | E]:
-        if not isinstance(other, HFTuple):
-            msg = 'Not an HFTuple'
+    def __add__[E](self, other: ITuple[E], /) -> ITuple[D | E]:
+        if not isinstance(other, ITuple):
+            msg = 'Not an ITuple'
             raise ValueError(msg)
-        return HFTuple(concat(self, other))
+        return ITuple(concat(self, other))
 
-    def __mul__(self, num: int, /) -> HFTuple[D]:
-        return HFTuple(self._ds.__mul__(num if num > 0 else 0))
+    def __mul__(self, num: int, /) -> ITuple[D]:
+        return ITuple(self._ds.__mul__(num if num > 0 else 0))
 
-    def __rmul__(self, num: int, /) -> HFTuple[D]:
-        return HFTuple(self._ds.__mul__(num if num > 0 else 0))
+    def __rmul__(self, num: int, /) -> ITuple[D]:
+        return ITuple(self._ds.__mul__(num if num > 0 else 0))
 
     def accummulate[L](
         self, f: Callable[[L, D], L], s: L | None = None, /
-    ) -> HFTuple[L]:
+    ) -> ITuple[L]:
         """Accumulate partial folds
 
-        Accumulate partial fold results in an HFTuple with an optional starting
+        Accumulate partial fold results in an ITuple with an optional starting
         value.
 
         """
         if s is None:
-            return HFTuple(accumulate(self, f))
-        return HFTuple(accumulate(self, f, s))
+            return ITuple(accumulate(self, f))
+        return ITuple(accumulate(self, f, s))
 
-    def map[U](self, f: Callable[[D], U], /) -> HFTuple[U]:
-        return HFTuple(map(f, self))
+    def map[U](self, f: Callable[[D], U], /) -> ITuple[U]:
+        return ITuple(map(f, self))
 
     def bind[U](
-        self, f: Callable[[D], HFTuple[U]], type: FM = FM.CONCAT, /
-    ) -> HFTuple[U] | Never:
-        """Bind function `f` to the `HFTuple`.
+        self, f: Callable[[D], ITuple[U]], type: FM = FM.CONCAT, /
+    ) -> ITuple[U] | Never:
+        """Bind function `f` to the `ITuple`.
 
         * FM Enum types
           * CONCAT: sequentially concatenate iterables one after the other
@@ -202,14 +201,14 @@ class HFTuple[D]():
         """
         match type:
             case FM.CONCAT:
-                return HFTuple(concat(*map(f, self)))
+                return ITuple(concat(*map(f, self)))
             case FM.MERGE:
-                return HFTuple(merge(*map(f, self)))
+                return ITuple(merge(*map(f, self)))
             case FM.EXHAUST:
-                return HFTuple(exhaust(*map(f, self)))
+                return ITuple(exhaust(*map(f, self)))
 
         raise ValueError('Unknown FM type')
 
-def hftuple[D](*ts: T) -> HFTuple[T]:
-    """Return an `HFTuple` from multiple values."""
-    return HFTuple(ts)
+def ituple[T](*ts: T) -> ITuple[T]:
+    """Return an `ITuple` from multiple values."""
+    return ITuple(ts)
