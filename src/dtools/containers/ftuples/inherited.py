@@ -20,7 +20,7 @@ Providing a FP interface for tuples. Implemented by inheriting from tuple.
 - class `ITuple`
   - inherits from tuple with an "is-a" implementation
     - intended to be further inherited
-    - unslotted 
+    - unslotted
   - function `ituple`
     - return an ITuple from function's arguments
 
@@ -28,17 +28,16 @@ Providing a FP interface for tuples. Implemented by inheriting from tuple.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
-from typing import cast, Never, overload, TypeVar, reveal_type
+from collections.abc import Callable, Iterable, Iterator
+from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['ITuple', 'ituple']
 
-D = TypeVar('D', covariant=True)
-T = TypeVar('T', covariant=True)
+D_co = TypeVar('D_co', covariant=True)
 
 
-class ITuple[D](tuple[D]):
+class ITuple[D_co](tuple[D_co]):
     """
     #### Functional Tuple suitable for inheritance
 
@@ -51,38 +50,52 @@ class ITuple[D](tuple[D]):
       * both left and right int multiplication supported
 
     """
-    E = TypeVar('E')
+
     L = TypeVar('L')
     R = TypeVar('R')
     U = TypeVar('U')
 
-    def __new__(cls, *ds: D) -> ITuple[D]:
+    def __new__(cls, *ds: D_co) -> ITuple[D_co]:
         """Construct the tuple from an interator"""
         return super().__new__(cls, ds)
 
-    def __reversed__(self) -> Iterator[D]:
+    def __init__(self, *dss: Iterable[D_co]) -> None:
+        if (size := len(dss)) > 1:
+            msg = f'WTuple expects at most 1 iterable argument, got {size}'
+            raise ValueError(msg)
+
+    def __iter__(self) -> Iterator[D_co]:
+        return super().__iter__()
+
+    def __reversed__(self) -> Iterator[D_co]:
         for ii in range(len(self) - 1, -1, -1):
-            yield(self[ii])
+            yield (self[ii])
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(' + ', '.join(map(repr, self)) + ')'
 
     def __str__(self) -> str:
-        return "((" + ", ".join(map(repr, self)) + "))"
+        return '((' + ', '.join(map(repr, self)) + '))'
 
     def __eq__(self, other: object, /) -> bool:
         if self is other:
             return True
         if not isinstance(other, ITuple):
             return False
-        return self == other
+        if (length := len(self)) != len(other):
+            return False
+        else:
+            for ii in range(length):
+                if self[ii] != other[ii]:
+                    return False
+            return True
 
     @overload
-    def __getitem__(self, x: int) -> D | Never: ...
+    def __getitem__(self, x: int) -> D_co | Never: ...
     @overload
-    def __getitem__(self, x: slice) -> ITuple[D]: ...
+    def __getitem__(self, x: slice) -> ITuple[D_co]: ...
 
-    def __getitem__(self, idx: int | slice, /) -> ITuple[D] | D:
+    def __getitem__(self, idx: int | slice, /) -> ITuple[D_co] | D_co:
         if isinstance(idx, slice):
             return ITuple(*super().__getitem__(idx))
         else:
@@ -90,7 +103,7 @@ class ITuple[D](tuple[D]):
 
     def foldl[L](
         self,
-        f: Callable[[L, D], L],
+        f: Callable[[L, D_co], L],
         /,
         start: L | None = None,
         default: L | None = None,
@@ -118,7 +131,7 @@ class ITuple[D](tuple[D]):
 
     def foldr[R](
         self,
-        f: Callable[[D, R], R],
+        f: Callable[[D_co, R], R],
         /,
         start: R | None = None,
         default: R | None = None,
@@ -144,7 +157,7 @@ class ITuple[D](tuple[D]):
             acc = f(v, acc)
         return acc
 
-    def copy(self) -> ITuple[D]:
+    def copy(self) -> ITuple[D_co]:
         """Return a shallow copy of ITuple in O(1) time & space complexity."""
         return ITuple(self)
 
@@ -197,6 +210,7 @@ class ITuple[D](tuple[D]):
 
         raise ValueError('Unknown FM type')
 
-def ituple[T](*ts: T) -> ITuple[T]:
+
+def ituple[D_co](*ds: D_co) -> ITuple[D_co]:
     """Return an `ITuple` from multiple values."""
-    return ITuple(ts)
+    return ITuple[D_co](*ds)  # mypy thinks this is correct???

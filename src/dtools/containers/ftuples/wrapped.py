@@ -35,11 +35,11 @@ from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['WTuple', 'wtuple']
 
-D = TypeVar('D')
-T = TypeVar('T')
+D_co = TypeVar('D_co', covariant=True)
+T_co = TypeVar('T_co', covariant=True)
 
 
-class WTuple[D]():
+class WTuple[D_co]():
     """
     #### Functional Tuple giving a tuple a more FP API
 
@@ -59,17 +59,17 @@ class WTuple[D]():
     U = TypeVar('U')
 
 
-    def __init__(self, *dss: Iterable[D]) -> None:
+    def __init__(self, *dss: Iterable[D_co]) -> None:
         if (size := len(dss)) <= 1:
-            self._ds: tuple[D, ...] = tuple(dss[0]) if size == 1 else tuple()
+            self._ds: tuple[D_co, ...] = tuple(dss[0]) if size == 1 else tuple()
         else:
             msg = f'WTuple expects at most 1 iterable argument, got {size}'
             raise ValueError(msg)
 
-    def __iter__(self) -> Iterator[D]:
+    def __iter__(self) -> Iterator[D_co]:
         return iter(self._ds)
 
-    def __reversed__(self) -> Iterator[D]:
+    def __reversed__(self) -> Iterator[D_co]:
         return reversed(self._ds)
 
     def __bool__(self) -> bool:
@@ -92,18 +92,18 @@ class WTuple[D]():
         return self._ds == other._ds
 
     @overload
-    def __getitem__(self, idx: int, /) -> D: ...
+    def __getitem__(self, idx: int, /) -> D_co: ...
     @overload
-    def __getitem__(self, idx: slice, /) -> WTuple[D]: ...
+    def __getitem__(self, idx: slice, /) -> WTuple[D_co]: ...
 
-    def __getitem__(self, idx: slice | int, /) -> WTuple[D] | D:
+    def __getitem__(self, idx: slice | int, /) -> WTuple[D_co] | D_co:
         if isinstance(idx, slice):
             return WTuple(self._ds[idx])
         return self._ds[idx]
 
     def foldl[L](
         self,
-        f: Callable[[L, D], L],
+        f: Callable[[L, D_co], L],
         /,
         start: L | None = None,
         default: L | None = None,
@@ -131,7 +131,7 @@ class WTuple[D]():
 
     def foldr[R](
         self,
-        f: Callable[[D, R], R],
+        f: Callable[[D_co, R], R],
         /,
         start: R | None = None,
         default: R | None = None,
@@ -157,24 +157,24 @@ class WTuple[D]():
             acc = f(v, acc)
         return acc
 
-    def copy(self) -> WTuple[D]:
+    def copy(self) -> WTuple[D_co]:
         """Return a shallow copy of WTuple in O(1) time & space complexity."""
         return WTuple(self)
 
-    def __add__[E](self, other: WTuple[E], /) -> WTuple[D | E]:
+    def __add__[E](self, other: WTuple[E], /) -> WTuple[D_co | E]:
         if not isinstance(other, WTuple):
             msg = 'Not an WTuple'
             raise ValueError(msg)
         return WTuple(concat(self, other))
 
-    def __mul__(self, num: int, /) -> WTuple[D]:
+    def __mul__(self, num: int, /) -> WTuple[D_co]:
         return WTuple(self._ds.__mul__(num if num > 0 else 0))
 
-    def __rmul__(self, num: int, /) -> WTuple[D]:
+    def __rmul__(self, num: int, /) -> WTuple[D_co]:
         return WTuple(self._ds.__mul__(num if num > 0 else 0))
 
     def accummulate[L](
-        self, f: Callable[[L, D], L], s: L | None = None, /
+        self, f: Callable[[L, D_co], L], s: L | None = None, /
     ) -> WTuple[L]:
         """Accumulate partial folds
 
@@ -186,11 +186,11 @@ class WTuple[D]():
             return WTuple(accumulate(self, f))
         return WTuple(accumulate(self, f, s))
 
-    def map[U](self, f: Callable[[D], U], /) -> WTuple[U]:
+    def map[U](self, f: Callable[[D_co], U], /) -> WTuple[U]:
         return WTuple(map(f, self))
 
     def bind[U](
-        self, f: Callable[[D], WTuple[U]], type: FM = FM.CONCAT, /
+        self, f: Callable[[D_co], WTuple[U]], type: FM = FM.CONCAT, /
     ) -> WTuple[U] | Never:
         """Bind function `f` to the `WTuple`.
 
@@ -210,6 +210,6 @@ class WTuple[D]():
 
         raise ValueError('Unknown FM type')
 
-def wtuple[T](*ts: T) -> WTuple[T]:
+def wtuple[T_co](*ts: T_co) -> WTuple[T_co]:
     """Return an `WTuple` from multiple values."""
     return WTuple(ts)
