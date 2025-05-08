@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.containers.ftuples.wrapped import WTuple as WT, wtuple as wt
+from dtools.containers.ftuples.wrapped import Luple as WT, luple as wt
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MayBe as MB
 from dtools.fp.err_handling import Xor, RIGHT

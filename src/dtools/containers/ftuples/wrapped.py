@@ -13,17 +13,14 @@
 # limitations under the License.
 
 """
-### dtools.containers.ftuples.wrapped
+#### Immutable homogeneous "lists"
 
-Providing FP interfaces for tuples. Implemented with a wrapped tuple.
-
-- class `WTuple`
-  - wrapped tuple with a "has-a" implementation
-    - intended to be a "better" tuple
-    - not intended to be inherited from
-    - slotted 
-  - function `wtuple`
-    - return an WTuple from function's arguments
+- immutable data structure whose elements are all of the same type
+- a Luple can be of arbitrary length >= 1
+- hashable if elements are hashable
+- declared covariant in its generic datatype
+  - hashability will be enforced by LSP tooling
+  - Luple addition supported 
 
 """
 
@@ -33,37 +30,39 @@ from collections.abc import Callable, Iterable, Iterator
 from typing import cast, Never, overload, TypeVar
 from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
-__all__ = ['WTuple', 'wtuple']
+__all__ = ['Luple']
 
 D_co = TypeVar('D_co', covariant=True)
-T_co = TypeVar('T_co', covariant=True)
 
 
-class WTuple[D_co]():
+class Luple[D_co]:
+    """Immutable List like data structures 
+
+    - immutable "lists" all whose elements are all of the same type
+    - hashable if elements are hashable
+      - A `Luple` is declared covariant in its generic datatype
+      - hashability will be enforced by LSP tooling
+    - supports both indexing and slicing
+    - `Luple` addition & `int` multiplication supported
+      - addition concatenates results, resulting type a Union type
+      - both left and right int multiplication supported
+
     """
-    #### Functional Tuple giving a tuple a more FP API
 
-    * immutable tuple-like data structure with a functional interface
-    * supports both indexing and slicing
-    * `WTuple` addition & `int` multiplication supported
-      * addition concatenates results, resulting type a Union type
-      * both left and right int multiplication supported
+    __slots__ = ('_ds', '_len')
+    __match_args__ = ('_ds', '_len')
 
-    """
-
-    __slots__ = ('_ds',)
-
-    E = TypeVar('E')
-    L = TypeVar('L')
-    R = TypeVar('R')
-    U = TypeVar('U')
+    L_co = TypeVar('L_co', covariant=True)
+    R_co = TypeVar('R_co', covariant=True)
+    U_co = TypeVar('U_co', covariant=True)
 
 
     def __init__(self, *dss: Iterable[D_co]) -> None:
         if (size := len(dss)) <= 1:
             self._ds: tuple[D_co, ...] = tuple(dss[0]) if size == 1 else tuple()
+            self._len = len(self._ds)
         else:
-            msg = f'WTuple expects at most 1 iterable argument, got {size}'
+            msg = f'Luple expects at most 1 iterable argument, got {size}'
             raise ValueError(msg)
 
     def __iter__(self) -> Iterator[D_co]:
@@ -94,36 +93,36 @@ class WTuple[D_co]():
     @overload
     def __getitem__(self, idx: int, /) -> D_co: ...
     @overload
-    def __getitem__(self, idx: slice, /) -> WTuple[D_co]: ...
+    def __getitem__(self, idx: slice, /) -> Luple[D_co]: ...
 
-    def __getitem__(self, idx: slice | int, /) -> WTuple[D_co] | D_co:
+    def __getitem__(self, idx: slice | int, /) -> Luple[D_co] | D_co:
         if isinstance(idx, slice):
-            return WTuple(self._ds[idx])
+            return Luple(self._ds[idx])
         return self._ds[idx]
 
-    def foldl[L](
+    def foldl[L_co](
         self,
-        f: Callable[[L, D_co], L],
+        f: Callable[[L_co, D_co], L_co],
         /,
-        start: L | None = None,
-        default: L | None = None,
-    ) -> L | None:
+        start: L_co | None = None,
+        default: L_co | None = None,
+    ) -> L_co | None:
         """Fold Left
 
         * fold left with an optional starting value
         * first argument of function `f` is for the accumulated value
-        * throws `ValueError` when `WTuple` empty and a start value not given
+        * throws `ValueError` when `Luple` empty and a start value not given
 
         """
         it = iter(self._ds)
         if start is not None:
             acc = start
         elif self:
-            acc = cast(L, next(it))  # L = D in this case
+            acc = cast(L_co, next(it))  # L_co = D_co in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty WTuple'
-                raise ValueError('WTuple.foldl - ' + msg)
+                msg = 'Both start and default cannot be None for an empty L_couple'
+                raise ValueError('Luple.foldl - ' + msg)
             acc = default
         for v in it:
             acc = f(acc, v)
@@ -140,7 +139,7 @@ class WTuple[D_co]():
 
         * fold right with an optional starting value
         * second argument of function `f` is for the accumulated value
-        * throws `ValueError` when `WTuple` empty and a start value not given
+        * throws `ValueError` when `Luple` empty and a start value not given
 
         """
         it = reversed(self._ds)
@@ -150,49 +149,50 @@ class WTuple[D_co]():
             acc = cast(R, next(it))  # R = D in this case
         else:
             if default is None:
-                msg = 'Both start and default cannot be None for an empty WTuple'
-                raise ValueError('WTuple.foldR - ' + msg)
+                msg = 'Both start and default cannot be None for an empty Luple'
+                raise ValueError('Luple.foldR - ' + msg)
             acc = default
         for v in it:
             acc = f(v, acc)
         return acc
 
-    def copy(self) -> WTuple[D_co]:
-        """Return a shallow copy of WTuple in O(1) time & space complexity."""
-        return WTuple(self)
+    def copy(self) -> Luple[D_co]:
+        """Return a shallow copy of Luple in O(1) time & space complexity."""
+        return Luple(self)
 
-    def __add__[E](self, other: WTuple[E], /) -> WTuple[D_co | E]:
-        if not isinstance(other, WTuple):
-            msg = 'Not an WTuple'
+    def __add__(self, other: Luple[D_co], /) -> Luple[D_co]:
+        if not isinstance(other, Luple):
+            msg = 'Luple being added to something not a Luple'
             raise ValueError(msg)
-        return WTuple(concat(self, other))
 
-    def __mul__(self, num: int, /) -> WTuple[D_co]:
-        return WTuple(self._ds.__mul__(num if num > 0 else 0))
+        return Luple(concat(self, other))
 
-    def __rmul__(self, num: int, /) -> WTuple[D_co]:
-        return WTuple(self._ds.__mul__(num if num > 0 else 0))
+    def __mul__(self, num: int, /) -> Luple[D_co]:
+        return Luple(self._ds.__mul__(num if num > 0 else 0))
 
-    def accummulate[L](
-        self, f: Callable[[L, D_co], L], s: L | None = None, /
-    ) -> WTuple[L]:
+    def __rmul__(self, num: int, /) -> Luple[D_co]:
+        return Luple(self._ds.__mul__(num if num > 0 else 0))
+
+    def accummulate[L_co](
+        self, f: Callable[[L_co, D_co], L_co], s: L_co | None = None, /
+    ) -> Luple[L_co]:
         """Accumulate partial folds
 
-        Accumulate partial fold results in an WTuple with an optional starting
+        Accumulate partial fold results in an Luple with an optional starting
         value.
 
         """
         if s is None:
-            return WTuple(accumulate(self, f))
-        return WTuple(accumulate(self, f, s))
+            return Luple(accumulate(self, f))
+        return Luple(accumulate(self, f, s))
 
-    def map[U](self, f: Callable[[D_co], U], /) -> WTuple[U]:
-        return WTuple(map(f, self))
+    def map[U_co](self, f: Callable[[D_co], U_co], /) -> Luple[U_co]:
+        return Luple(map(f, self))
 
-    def bind[U](
-        self, f: Callable[[D_co], WTuple[U]], type: FM = FM.CONCAT, /
-    ) -> WTuple[U] | Never:
-        """Bind function `f` to the `WTuple`.
+    def bind[U_co](
+        self, f: Callable[[D_co], Luple[U_co]], type: FM = FM.CONCAT, /
+    ) -> Luple[U_co] | Never:
+        """Bind function `f` to the `Luple`.
 
         * FM Enum types
           * CONCAT: sequentially concatenate iterables one after the other
@@ -202,14 +202,14 @@ class WTuple[D_co]():
         """
         match type:
             case FM.CONCAT:
-                return WTuple(concat(*map(f, self)))
+                return Luple(concat(*map(f, self)))
             case FM.MERGE:
-                return WTuple(merge(*map(f, self)))
+                return Luple(merge(*map(f, self)))
             case FM.EXHAUST:
-                return WTuple(exhaust(*map(f, self)))
+                return Luple(exhaust(*map(f, self)))
 
         raise ValueError('Unknown FM type')
 
-def wtuple[T_co](*ts: T_co) -> WTuple[T_co]:
-    """Return an `WTuple` from multiple values."""
-    return WTuple(ts)
+
+def luple[D_co](*ds: D_co) -> Luple[D_co]:
+    return Luple(ds)

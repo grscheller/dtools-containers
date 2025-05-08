@@ -37,7 +37,7 @@ __all__ = ['ITuple', 'ituple']
 D_co = TypeVar('D_co', covariant=True)
 
 
-class ITuple[D_co](tuple[D_co]):
+class ITuple[D_co](tuple[D_co, ...]):
     """
     #### Functional Tuple suitable for inheritance
 
@@ -56,13 +56,13 @@ class ITuple[D_co](tuple[D_co]):
     U = TypeVar('U')
 
     def __new__(cls, *ds: D_co) -> ITuple[D_co]:
-        """Construct the tuple from an interator"""
+        """Construct the tuple from an iterable"""
         return super().__new__(cls, ds)
 
-    def __init__(self, *dss: Iterable[D_co]) -> None:
-        if (size := len(dss)) > 1:
-            msg = f'WTuple expects at most 1 iterable argument, got {size}'
-            raise ValueError(msg)
+#   def __init__(self, *dss: Iterable[D_co]) -> None:
+#       if (size := len(dss)) > 1:
+#           msg = f'WTuple expects at most 1 iterable argument, got {size}'
+#           raise ValueError(msg)
 
     def __iter__(self) -> Iterator[D_co]:
         return super().__iter__()
@@ -97,7 +97,7 @@ class ITuple[D_co](tuple[D_co]):
 
     def __getitem__(self, idx: int | slice, /) -> ITuple[D_co] | D_co:
         if isinstance(idx, slice):
-            return ITuple(*super().__getitem__(idx))
+            return ITuple(super().__getitem__(idx))
         else:
             return super().__getitem__(idx)
 
@@ -213,4 +213,4 @@ class ITuple[D_co](tuple[D_co]):
 
 def ituple[D_co](*ds: D_co) -> ITuple[D_co]:
     """Return an `ITuple` from multiple values."""
-    return ITuple[D_co](*ds)  # mypy thinks this is correct???
+    return ITuple[D_co](ds)
