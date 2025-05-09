@@ -44,6 +44,8 @@ class ITuple[D_co](tuple[D_co, ...]):
     TODO: replace this from one I have in my GIT history
 
     * immutable tuple-like data structure with a functional interface
+    - An `ITuple` is covariant in its generic datatype
+        - hashable if elements are hashable
     * supports both indexing and slicing
     * `ITuple` addition & `int` multiplication supported
       * addition concatenates results, resulting type a Union type
