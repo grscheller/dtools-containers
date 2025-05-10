@@ -21,7 +21,8 @@ classifiers = [
 dynamic = ["description"]
 keywords = [
     "boxes",
-    "tuples",
+    "immutable_list",
+    "functional_tuple",
 ]
 dependencies = [
     "dtools.fp >= 1.8.2, < 1.9",
@@ -35,10 +36,10 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/grscheller/dtools-docs/blob/main/README.md"
+Homepage = "https://github.com/grscheller/dtools-namespace-projects/blob/main/README.md"
 Source = "https://github.com/grscheller/dtools-tuples"
 Changelog = "https://github.com/grscheller/dtools-tuples/blob/main/CHANGELOG.md"
-Documentation = "https://grscheller.github.io/dtools-docs/tuples"
+Documentation = "https://grscheller.github.io/dtools-namespace-projects/tuples"
 
 [tool.flit.sdist]
 exclude = ["dist", "tests", ".gitignore", ".mypy_cache", ".pytest_cache"]
