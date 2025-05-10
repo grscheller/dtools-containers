@@ -68,7 +68,7 @@ class ImmutableList[D_co](Hashable):
             try:
                 self._hash = hash((self._len,) + self._ds)
             except TypeError as exc:
-                msg = f'Luplt: {exc}'
+                msg = f'ImmutableList: {exc}'
                 raise TypeError(msg)
 
     def __hash__(self) -> int:
@@ -141,13 +141,13 @@ class ImmutableList[D_co](Hashable):
             acc = f(acc, v)
         return acc
 
-    def foldr[R](
+    def foldr[R_co](
         self,
-        f: Callable[[D_co, R], R],
+        f: Callable[[D_co, R_co], R_co],
         /,
-        start: R | None = None,
-        default: R | None = None,
-    ) -> R | None:
+        start: R_co | None = None,
+        default: R_co | None = None,
+    ) -> R_co | None:
         """Fold Right
 
         - fold right with an optional starting value
@@ -159,7 +159,7 @@ class ImmutableList[D_co](Hashable):
         if start is not None:
             acc = start
         elif self:
-            acc = cast(R, next(it))  # R = D in this case
+            acc = cast(R_co, next(it))
         else:
             if default is None:
                 msg0 = 'ImmutableList: foldr method requires '
@@ -219,7 +219,7 @@ class ImmutableList[D_co](Hashable):
             case FM.EXHAUST:
                 return ImmutableList(exhaust(*map(f, self)))
 
-        raise ValueError('Unknown FM type')
+        raise ValueError(f'ImmutableList: Unknown FM type: {type}')
 
 
 def immutable_list[D_co](*ds: D_co) -> ImmutableList[D_co]:
