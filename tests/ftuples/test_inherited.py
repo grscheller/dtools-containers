@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.containers.ftuples.inherited import ITuple as IT, ituple as it
+from dtools.containers.ftuples.inherited import FunctionalTuple as IT
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MayBe as MB
 from dtools.fp.err_handling import Xor, RIGHT
@@ -22,7 +22,7 @@ class TestITuple:
     """ITuple test suite"""
     def test_method_returns_copy(self) -> None:
         """Test guarantee"""
-        it1 = it(1, 2, 3, 4, 5, 6)
+        it1 = IT(1, 2, 3, 4, 5, 6)
         it2 = it1.map(lambda x: x % 3)
         it3 = it1.copy()
         assert it2[2] == it2[5] == 0
@@ -32,7 +32,7 @@ class TestITuple:
     def test_empty(self) -> None:
         """Test functionality"""
         it1: IT[int] = IT()
-        it2: IT[int] = it()
+        it2: IT[int] = IT()
         assert it1 == it2
         assert it1 is not it2
         assert not it1
@@ -54,8 +54,8 @@ class TestITuple:
         assert str(Xor.idx(it2, 42).get_right().get()) == 'tuple index out of range'
 
     def test_indexing(self) -> None:
-        it0: IT[str] = it()
-        it1 = it("Emily", "Rachel", "Sarah", "Rebekah", "Mary")
+        it0: IT[str] = IT()
+        it1 = IT("Emily", "Rachel", "Sarah", "Rebekah", "Mary")
         assert it1[2] == "Sarah"
         assert it1[0] == "Emily"
         assert it1[-1] == "Mary"
@@ -67,29 +67,29 @@ class TestITuple:
         assert MB.idx(it0, 0).get('Buggy') == 'Buggy'
 
     def test_slicing(self) -> None:
-        it0: IT[int] = it()
-        it1: IT[int]  = IT(range(0,101,10))
-        assert it1 == it(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
-        assert it1[2:7:2] == it(20, 40, 60)
-        assert it1[8:2:-2] == it(80, 60, 40)
-        assert it1[8:] == it(80, 90, 100)
-        assert it1[8:-1] == it(80, 90)
+        it0: IT[int] = IT()
+        it1: IT[int]  = IT(*range(0,101,10))
+        assert it1 == IT(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+        assert it1[2:7:2] == IT(20, 40, 60)
+        assert it1[8:2:-2] == IT(80, 60, 40)
+        assert it1[8:] == IT(80, 90, 100)
+        assert it1[8:-1] == IT(80, 90)
         assert it1 == it1[:]
-        assert it1[8:130] == it(80, 90, 100)
-        assert it0[2:6] == it()
+        assert it1[8:130] == IT(80, 90, 100)
+        assert it0[2:6] == IT()
 
     def test_map(self) -> None:
-        it0: IT[int] = it()
-        it1: IT[int]  = IT(range(6))
-        assert it1 == it(0, 1, 2, 3, 4, 5)
+        it0: IT[int] = IT()
+        it1: IT[int]  = IT(*range(6))
+        assert it1 == IT(0, 1, 2, 3, 4, 5)
 
-        assert it1.map(lambda t: t*t) == it(0, 1, 4, 9, 16, 25)
-        assert it0.map(lambda t: t*t) == it()
+        assert it1.map(lambda t: t*t) == IT(0, 1, 4, 9, 16, 25)
+        assert it0.map(lambda t: t*t) == IT()
 
     def test_foldl(self) -> None:
         it0: IT[int] = IT()
-        it1: IT[int]  = IT(range(1, 6))
-        assert it1 == it(1, 2, 3, 4, 5)
+        it1: IT[int]  = IT(*range(1, 6))
+        assert it1 == IT(1, 2, 3, 4, 5)
 
         assert it1.foldl(lambda s, t: s*t) == 120
         assert it0.foldl(lambda s, t: s*t, default=42) == 42
@@ -97,9 +97,9 @@ class TestITuple:
         assert it0.foldl(lambda s, t: s*t, start=10) == 10
 
     def test_foldr(self) -> None:
-        it0: IT[int] = it()
-        it1: IT[int]  = IT(range(1, 4))
-        assert it1 == it(1, 2, 3)
+        it0: IT[int] = IT()
+        it1: IT[int]  = IT(*range(1, 4))
+        assert it1 == IT(1, 2, 3)
 
         assert it1.foldr(lambda t, s: s*s - t) == 48
         assert it0.foldr(lambda t, s: s*s - t, default = -1) == -1
@@ -122,45 +122,45 @@ class TestITuple:
 
     def test_accummulate(self) -> None:
         it0: IT[int] = IT()
-        it1: IT[int]  = IT(range(1,6))
-        assert it1 == it(1, 2, 3, 4, 5)
+        it1: IT[int]  = IT(*range(1,6))
+        assert it1 == IT(1, 2, 3, 4, 5)
 
         def add(x: int, y: int) -> int:
             return x + y
 
-        assert it1.accummulate(add) == it(1, 3, 6, 10, 15)
-        assert it0.accummulate(add) == it()
-        assert it1.accummulate(lambda x, y: x+y, 1) == it(1, 2, 4, 7, 11, 16)
-        assert it0.accummulate(lambda x, y: x+y, 1) == it(1)
+        assert it1.accummulate(add) == IT(1, 3, 6, 10, 15)
+        assert it0.accummulate(add) == IT()
+        assert it1.accummulate(lambda x, y: x+y, 1) == IT(1, 2, 4, 7, 11, 16)
+        assert it0.accummulate(lambda x, y: x+y, 1) == IT(1)
 
     def test_bind(self) -> None:
-        it0: IT[int] = it()
-        it1 = it(4, 2, 3, 5)
-        it2 = it(4, 2, 0, 3)
+        it0: IT[int] = IT()
+        it1 = IT(4, 2, 3, 5)
+        it2 = IT(4, 2, 0, 3)
 
         def ff(n: int) -> IT[int]:
-            return IT(range(n))
+            return IT(*range(n))
 
         fm = it1.bind(ff)
         mm = it1.bind(ff, FM.MERGE)
         em = it1.bind(ff, FM.EXHAUST)
 
-        assert fm == it(0, 1, 2, 3, 0, 1, 0, 1, 2, 0, 1, 2, 3, 4)
-        assert mm == it(0, 0, 0, 0, 1, 1, 1, 1)
-        assert em == it(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4)
+        assert fm == IT(0, 1, 2, 3, 0, 1, 0, 1, 2, 0, 1, 2, 3, 4)
+        assert mm == IT(0, 0, 0, 0, 1, 1, 1, 1)
+        assert em == IT(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4)
 
         fm = it2.bind(ff, FM.CONCAT)
         mm = it2.bind(ff, FM.MERGE)
         em = it2.bind(ff, FM.EXHAUST)
 
-        assert fm == it(0, 1, 2, 3, 0, 1, 0, 1, 2)
-        assert mm == it()
-        assert em == it(0, 0, 0, 1, 1, 1, 2, 2, 3)
+        assert fm == IT(0, 1, 2, 3, 0, 1, 0, 1, 2)
+        assert mm == IT()
+        assert em == IT(0, 0, 0, 1, 1, 1, 2, 2, 3)
 
         fm = it0.bind(ff, FM.CONCAT)
         mm = it0.bind(ff, FM.MERGE)
         em = it0.bind(ff, FM.EXHAUST)
 
-        assert fm == it()
-        assert mm == it()
-        assert em == it()
+        assert fm == IT()
+        assert mm == IT()
+        assert em == IT()
