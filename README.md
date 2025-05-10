@@ -34,5 +34,5 @@ interface.
 
 [1]: https://pypi.org/project/dtools.containers/
 [2]: https://github.com/grscheller/dtools-containers/
-[3]: https://grscheller.github.io/dtools-docs/containers/
-[4]: https://github.com/grscheller/dtools-docs/blob/main/README.md
+[3]: https://grscheller.github.io/dtools-namespace_projects/containers/
+[4]: https://github.com/grscheller/dtools-namespace_projects/blob/main/README.md
