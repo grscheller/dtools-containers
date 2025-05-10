@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.containers.ftuples.inherited import FunctionalTuple as IT
+from dtools.containers.functional_tuple import FunctionalTuple as IT
 from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MayBe as MB
 from dtools.fp.err_handling import Xor, RIGHT

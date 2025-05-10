@@ -16,10 +16,15 @@
 
 - *package* dtools.containers: Container-like data structures
   - *module* boxes: stateful containers 
-    - *module* box: container holding at most 1 item
-  - *module* dtools.containers.tuples: tuple-like data structures
-    - *module* htuple: functional tuple ("has-a" implementation)
-    - *module* ituple: functional tuple ("is-a" implementation) <- TODO
+  - *module* immutable_list: 
+    - hashable
+      - hashability should be enforced with typing tooling
+        - not yet fully tested
+      - hashability will be enforced at runtime
+        - not yet fully tested
+  - *module* functional_tuple
+    - give tuple a more FP interface
+    - more easily inheritable than from tuple directly
 
 """
 

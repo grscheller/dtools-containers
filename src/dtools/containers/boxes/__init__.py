@@ -15,6 +15,6 @@
 """### Developer Tools - Box-like data structures
 
 - *module* boxes: stateful containers
-  - *class* Box: for a stateful container holding at most 1 item
+  - *class* Box: for a mutable container holding at most 1 item
 
 """
