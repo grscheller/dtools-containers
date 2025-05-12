@@ -23,7 +23,7 @@ from dtools.fp.err_handling import MayBe as MB
 
 
 class TestFP:
-    """FP test of iluple with other datastructures"""
+    """FP test of ImmutableList with other datastructures"""
     def test_fold(self) -> None:
         """Test folding"""
         def add2(x: int, y: int) -> int:
@@ -75,11 +75,15 @@ class TestFP:
         assert il0.accummulate(add2) == il()
         assert il0.accummulate(mult2) == il()
 
-    def test_iluple_bind(self) -> None:
+    def test_immutablelist_bind(self) -> None:
         """Test bind (flatmap)"""
+        def l1(x: int) -> int:
+            return 2*x + 1
+
+        def l2(x: int) -> IL[int]:
+            return IL(range(2, x + 1)).accummulate(lambda x, y: x + y)
+
         il0 = IL(range(3, 101))
-        l1 = lambda x: 2 * x + 1
-        l2 = lambda x: IL(range(2, x + 1)).accummulate(lambda x, y: x + y)
         il1 = il0.map(l1)
         il2 = il0.bind(l2, FM.CONCAT)
         il3 = il0.bind(l2, FM.MERGE)

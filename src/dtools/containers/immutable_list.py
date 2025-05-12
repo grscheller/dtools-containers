@@ -66,7 +66,7 @@ class ImmutableList[D_co](Hashable):
             self._ds: tuple[D_co, ...] = tuple(dss[0]) if size == 1 else tuple()
             self._len = len(self._ds)
             try:
-                self._hash = hash((self._len,) + self._ds)
+                self._hash = hash((self._len, 42) + self._ds)
             except TypeError as exc:
                 msg = f'ImmutableList: {exc}'
                 raise TypeError(msg)
@@ -87,7 +87,7 @@ class ImmutableList[D_co](Hashable):
         return len(self._ds)
 
     def __repr__(self) -> str:
-        return 'luple(' + ', '.join(map(repr, self)) + ')'
+        return 'immutable_list(' + ', '.join(map(repr, self)) + ')'
 
     def __str__(self) -> str:
         return '((' + ', '.join(map(repr, self)) + '))'

@@ -19,7 +19,7 @@ from dtools.fp.iterables import FM
 from dtools.fp.err_handling import MayBe as MB
 from dtools.fp.err_handling import Xor, RIGHT
 
-class TestILuple:
+class TestImmutableList:
     """ImmutableList test suite"""
     def test_method_returns_copy(self) -> None:
         """Test guarantee"""
