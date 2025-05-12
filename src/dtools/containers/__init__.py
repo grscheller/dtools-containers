@@ -14,17 +14,21 @@
 
 """### Developer Tools - Container-like data structures
 
-- *package* dtools.containers: Container-like data structures
-  - *module* boxes: stateful containers 
-  - *module* immutable_list: 
+- *module* `dtools.containers`: Container-like data structures
+  - *module* `box`: stateful container holding at most one object
+  - *module* `functional_tuple`: directly inherited from the `tuple` builtin 
+    - gives `tuple` FP interface
+    - more easily inherited from than from tuple directly
+  - *module* `immutable_list`: 
     - hashable
-      - hashability should be enforced with typing tooling
-        - not yet fully tested
       - hashability will be enforced at runtime
-        - not yet fully tested
-  - *module* functional_tuple
-    - give tuple a more FP interface
-    - more easily inheritable than from tuple directly
+        - should also be enforced with typing tooling (not yet fully tested)
+  - *module* `maybe`: implements the "maybe" (also called "optional") monad
+    - class representing a possibly missing value
+  - *module* `xor`: implements a left biased "either" monad
+    - class representing either a "left" or "right" value, but not both
+      - these values can be the same or different types
+      - the "left" value is taken to be the "happy path"
 
 """
 

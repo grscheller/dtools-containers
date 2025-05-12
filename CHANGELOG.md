@@ -4,10 +4,18 @@ PyPI dtools.tuples project.
 
 - first digit - major event, epoch, or paradigm shift
 - second digit - breaking API changes, major changes
-- third digit - bug fixes, API additions, breaking API in dev env
-- forth digit - commit count changes/regressions (dev environment only)
+- third digit - bug fixes, API additions, docstring changes
 
-## Releases and other important milestones
+## Releases and Important Milestones
+
+### Version 1.0.0 - PyPI release date 2025-05-TBA
+
+- first PyPI release as dtools.containers
+  - box.py -> stateful (mutable) container that can contain 0 ot 1 items
+  - functional_tuple.py -> easier starting point to inherit from tuple
+  - immutable_list.py -> immutable, guaranteed hashable "list"
+  - maybe.py -> implements the "maybe" monad from FP
+  - xor.py -> implements a left biased either monad from FP
 
 ### Version 0.27.1 - PyPI release date 2025-04-22
 
