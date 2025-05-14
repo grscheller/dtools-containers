@@ -24,7 +24,7 @@ from __future__ import annotations
 
 __all__ = ['MayBe']
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from typing import cast, Final, Never, overload, TypeVar
 from dtools.fp.singletons import Sentinel
 
@@ -165,3 +165,24 @@ class MayBe[D]:
             RuntimeError,
         ):
             return MayBe()
+
+    @classmethod
+    def sequence[T](cls, sequence_mb_t: Sequence[MayBe[T]]) -> MayBe[Sequence[T]]:
+        """Sequence a mutable indexable of type `MayBe[~T]`
+
+        * if the iterated `MayBe` values are not all empty,
+          * return a `MayBe` of an iterator of the contained values
+          * otherwise return an empty `MayBe`
+
+        """
+        list_items: list[T] = list()
+
+        for mb_t in sequence_mb_t:
+            if mb_t:
+                list_items.append(mb_t.get())
+            else:
+                return MayBe()
+
+        sequence_type = type(sequence_mb_t)
+
+        return MayBe(sequence_type(list_items))

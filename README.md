@@ -3,7 +3,7 @@
 Python package of modules implementing container-like data structures.
 
 - **Repositories**
-  - [dtools.tuples][1] project on *PyPI*
+  - [dtools.containers][1] project on *PyPI*
   - [Source code][2] on *GitHub*
 - **Detailed documentation**
   - [Detailed API documentation][3] on *GH-Pages*
@@ -11,26 +11,35 @@ Python package of modules implementing container-like data structures.
 This project is part of the
 [Developer Tools for Python][4] **dtools.** namespace project.
 
-## Overview
+### The Box - dtools.containers.box
 
-Tuple-based data structures.
+Container holding at most one object of a given type. This stateful
+(mutable) container contains 0 or 1 item at a given time.
 
-### Boxes
+### Functional Tuple - dtools.containers.functional_tuple 
 
-- *module* `dtools.containers.boxes`
-  - *module* `box`: Holds an item `Box`
-    - container that can contain 0 or 1 item of a given type
-    - stateful with a procedural interface
+Subclassed tuple with a more functional interface. Gives tuple
+a FP methods. Designed to be further inherited from.
 
-### Functional Tuples
+### Immutable List - dtools.containers.immutable_list
 
-Data structures wrapping a Python tuple giving it a functional
-interface.
+An immutable, hashable Python list-like object. Hashability will be
+enforced at runtime. Mutable list methods will return new objects.
 
-- *module* `dtools.containers.ftuples`
-    - immutable tuple-like data structure with a functional interface
-      - *module* `hftuple` implements class `HFTuple` "has-a" tuple
-      - *module* `iftuple` implements class `IFTuple` "is-a" tuple
+### Maybe Monad - dtools.containers.maybe
+
+An implementation of the maybe (optional) monad. Data structure
+represents a possibly missing value. Useful in implementing exception
+free code paths.
+
+### Either Monad - dtools.containers.xor
+
+An implementation of a left biased either monad. Data structure
+representing either a "left" or "right" value, but not both. These two
+values can be the same or different types. The "left" value is usually
+taken to be the "happy path" of code flow. The "right" value is often
+used for an error condition or a text string describing what went wrong.
+
 
 [1]: https://pypi.org/project/dtools.containers/
 [2]: https://github.com/grscheller/dtools-containers/

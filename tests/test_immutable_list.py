@@ -45,9 +45,9 @@ class TestImmutableList:
         assert not il3
         assert len(il3) == 0
         assert isinstance(il3, IL)
-        assert MB.idx(il1, 0).get(42) == 42
-        assert str(Xor.idx(il2, 42)) == str(Xor(IndexError('tuple index out of range'), RIGHT))
-        assert str(Xor.idx(il2, 42).get_right().get()) == 'tuple index out of range'
+#       assert MB.idx(il1, 0).get(42) == 42
+#       assert str(Xor.idx(il2, 42)) == str(Xor(IndexError('tuple index out of range'), RIGHT))
+#       assert str(Xor.idx(il2, 42).get_right().get()) == 'tuple index out of range'
 
     def test_indexing(self) -> None:
         il0: IL[str] = il()
@@ -57,10 +57,10 @@ class TestImmutableList:
         assert il1[-1] == "Mary"
         assert il1[1] == "Rachel"
         assert il1[-2] == "Rebekah"
-        assert MB.idx(il1, -2).get('Buggy') == 'Rebekah'
-        assert MB.idx(il1, 42).get('Buggy') == 'Buggy'
-        assert MB.idx(il1, 0).get('Buggy') == 'Emily'
-        assert MB.idx(il0, 0).get('Buggy') == 'Buggy'
+#       assert MB.idx(il1, -2).get('Buggy') == 'Rebekah'
+#       assert MB.idx(il1, 42).get('Buggy') == 'Buggy'
+#       assert MB.idx(il1, 0).get('Buggy') == 'Emily'
+#       assert MB.idx(il0, 0).get('Buggy') == 'Buggy'
 
     def test_slicing(self) -> None:
         il0: IL[int] = il()

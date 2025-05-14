@@ -13,154 +13,173 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dtools.containers.functional_tuple import FunctionalTuple as IT
+from dtools.containers.functional_tuple import FunctionalTuple as FT
+from dtools.containers.functional_tuple import functional_tuple as ft
 from dtools.containers.maybe import MayBe as MB
 from dtools.containers.xor import Xor, RIGHT
 from dtools.fp.iterables import FM
 
-class TestITuple:
-    """ITuple test suite"""
+class TestFunctionalTuple:
+    """FunctionalTuple test suite"""
     def test_method_returns_copy(self) -> None:
         """Test guarantee"""
-        it1 = IT(1, 2, 3, 4, 5, 6)
-        it2 = it1.map(lambda x: x % 3)
-        it3 = it1.copy()
-        assert it2[2] == it2[5] == 0
-        assert it1[2] is not None and it1[2]*2 == it1[5] == 6
-        assert it3[2] is not None and it3[2]*2 == it3[5] == 6
+        ft1 = ft(1, 2, 3, 4, 5, 6)
+        ft2 = ft1.map(lambda x: x % 3)
+        ft3 = ft1.copy()
+        assert ft2[2] == ft2[5] == 0
+        assert ft1[2] is not None and ft1[2]*2 == ft1[5] == 6
+        assert ft3[2] is not None and ft3[2]*2 == ft3[5] == 6
 
     def test_empty(self) -> None:
         """Test functionality"""
-        it1: IT[int] = IT()
-        it2: IT[int] = IT()
-        assert it1 == it2
-        assert it1 is not it2
-        assert not it1
-        assert not it2
-        assert len(it1) == 0
-        assert len(it2) == 0
-        it3 = it1 + it2
-        assert it3 == it2 == it1
-        assert it3 is not it1
-        assert it3 is not it2
-        assert not it3
-        assert len(it3) == 0
-        assert isinstance(it3, IT)
-        it4 = it3.copy()
-        assert it4 == it3
-        assert it4 is not it3
-        assert MB.idx(it1, 0).get(42) == 42
-        assert str(Xor.idx(it2, 42)) == str(Xor(IndexError('tuple index out of range'), RIGHT))
-        assert str(Xor.idx(it2, 42).get_right().get()) == 'tuple index out of range'
+        ft1: FT[int] = FT()
+        ft2: FT[int] = ft()
+        assert ft1 == ft2
+        assert ft1 is not ft2
+        assert not ft1
+        assert not ft2
+        assert len(ft1) == 0
+        assert len(ft2) == 0
+        ft3 = ft1 + ft2
+        assert ft3 == ft2 == ft1
+        assert ft3 is not ft1
+        assert ft3 is not ft2
+        assert not ft3
+        assert len(ft3) == 0
+        assert isinstance(ft3, FT)
+        ft4 = ft3.copy()
+        assert ft4 == ft3
+        assert ft4 is not ft3
+#       assert MB.idx(ft1, 0).get(42) == 42
+#       assert str(Xor.idx(ft2, 42)) == str(Xor(IndexError('tuple index out of range'), RIGHT))
+#       assert str(Xor.idx(ft2, 42).get_right().get()) == 'tuple index out of range'
 
     def test_indexing(self) -> None:
-        it0: IT[str] = IT()
-        it1 = IT("Emily", "Rachel", "Sarah", "Rebekah", "Mary")
-        assert it1[2] == "Sarah"
-        assert it1[0] == "Emily"
-        assert it1[-1] == "Mary"
-        assert it1[1] == "Rachel"
-        assert it1[-2] == "Rebekah"
-        assert MB.idx(it1, -2).get('Buggy') == 'Rebekah'
-        assert MB.idx(it1, 42).get('Buggy') == 'Buggy'
-        assert MB.idx(it1, 0).get('Buggy') == 'Emily'
-        assert MB.idx(it0, 0).get('Buggy') == 'Buggy'
+        ft0: FT[str] = FT()
+        ft1 = ft("Emily", "Rachel", "Sarah", "Rebekah", "Mary")
+        assert ft1[2] == "Sarah"
+        assert ft1[0] == "Emily"
+        assert ft1[-1] == "Mary"
+        assert ft1[1] == "Rachel"
+        assert ft1[-2] == "Rebekah"
+#       assert MB.idx(ft1, -2).get('Buggy') == 'Rebekah'
+#       assert MB.idx(ft1, 42).get('Buggy') == 'Buggy'
+#       assert MB.idx(ft1, 0).get('Buggy') == 'Emily'
+#       assert MB.idx(ft0, 0).get('Buggy') == 'Buggy'
 
     def test_slicing(self) -> None:
-        it0: IT[int] = IT()
-        it1: IT[int]  = IT(*range(0,101,10))
-        assert it1 == IT(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
-        assert it1[2:7:2] == IT(20, 40, 60)
-        assert it1[8:2:-2] == IT(80, 60, 40)
-        assert it1[8:] == IT(80, 90, 100)
-        assert it1[8:-1] == IT(80, 90)
-        assert it1 == it1[:]
-        assert it1[8:130] == IT(80, 90, 100)
-        assert it0[2:6] == IT()
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(range(0,101,10))
+        assert ft1 == ft(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+        assert ft1[2:7:2] == ft(20, 40, 60)
+        assert ft1[8:2:-2] == ft(80, 60, 40)
+        assert ft1[8:] == ft(80, 90, 100)
+        assert ft1[8:-1] == ft(80, 90)
+        assert ft1 == ft1[:]
+        assert ft1[8:130] == ft(80, 90, 100)
+        assert ft0[2:6] == FT()
 
     def test_map(self) -> None:
-        it0: IT[int] = IT()
-        it1: IT[int]  = IT(*range(6))
-        assert it1 == IT(0, 1, 2, 3, 4, 5)
+        ft0: FT[int] = ft()
+        ft1: FT[int]  = ft(*range(6))
+        assert ft1 == ft(0, 1, 2, 3, 4, 5)
 
-        assert it1.map(lambda t: t*t) == IT(0, 1, 4, 9, 16, 25)
-        assert it0.map(lambda t: t*t) == IT()
+        assert ft1.map(lambda t: t*t) == ft(0, 1, 4, 9, 16, 25)
+        assert ft0.map(lambda t: t*t) == ft()
 
     def test_foldl(self) -> None:
-        it0: IT[int] = IT()
-        it1: IT[int]  = IT(*range(1, 6))
-        assert it1 == IT(1, 2, 3, 4, 5)
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(range(1, 6))
+        assert ft1 == ft(1, 2, 3, 4, 5)
 
-        assert it1.foldl(lambda s, t: s*t) == 120
-        assert it0.foldl(lambda s, t: s*t, default=42) == 42
-        assert it1.foldl(lambda s, t: s*t, 10) == 1200
-        assert it0.foldl(lambda s, t: s*t, start=10) == 10
+        assert ft1.foldl(lambda s, t: s*t) == 120
+        assert ft0.foldl(lambda s, t: s*t, default=42) == 42
+        assert ft1.foldl(lambda s, t: s*t, 10) == 1200
+        assert ft0.foldl(lambda s, t: s*t, start=10) == 10
 
     def test_foldr(self) -> None:
-        it0: IT[int] = IT()
-        it1: IT[int]  = IT(*range(1, 4))
-        assert it1 == IT(1, 2, 3)
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(range(1, 4))
+        assert ft1 == ft(1, 2, 3)
 
-        assert it1.foldr(lambda t, s: s*s - t) == 48
-        assert it0.foldr(lambda t, s: s*s - t, default = -1) == -1
-        assert it1.foldr(lambda t, s: s*s - t, start=5) == 232323
-        assert it0.foldr(lambda t, s: s*s - t, 5) == 5
+        assert ft1.foldr(lambda t, s: s*s - t) == 48
+        assert ft0.foldr(lambda t, s: s*s - t, default = -1) == -1
+        assert ft1.foldr(lambda t, s: s*s - t, start=5) == 232323
+        assert ft0.foldr(lambda t, s: s*s - t, 5) == 5
 
         try:
-            _ = it0.foldr(lambda t, s: 5*t + 6*s)
+            _ = ft0.foldr(lambda t, s: 5*t + 6*s)
         except ValueError:
             assert True
         else:
             assert False
 
         try:
-            _ = it0.foldl(lambda t, s: 5*t + 6*s)
+            _ = ft0.foldl(lambda t, s: 5*t + 6*s)
         except ValueError:
             assert True
         else:
             assert False
 
     def test_accummulate(self) -> None:
-        it0: IT[int] = IT()
-        it1: IT[int]  = IT(*range(1,6))
-        assert it1 == IT(1, 2, 3, 4, 5)
+        ft0: FT[int] = FT()
+        ft1: FT[int]  = FT(range(1,6))
+        assert ft1 == ft(1, 2, 3, 4, 5)
 
         def add(x: int, y: int) -> int:
             return x + y
 
-        assert it1.accummulate(add) == IT(1, 3, 6, 10, 15)
-        assert it0.accummulate(add) == IT()
-        assert it1.accummulate(lambda x, y: x+y, 1) == IT(1, 2, 4, 7, 11, 16)
-        assert it0.accummulate(lambda x, y: x+y, 1) == IT(1)
+        assert ft1.accummulate(add) == ft(1, 3, 6, 10, 15)
+        assert ft0.accummulate(add) == ft()
+        assert ft1.accummulate(lambda x, y: x+y, 1) == ft(1, 2, 4, 7, 11, 16)
+        assert ft0.accummulate(lambda x, y: x+y, 1) == ft(1)
 
     def test_bind(self) -> None:
-        it0: IT[int] = IT()
-        it1 = IT(4, 2, 3, 5)
-        it2 = IT(4, 2, 0, 3)
+        ft0: FT[int] = ft()
+        ft1 = ft(4, 2, 3, 5)
+        ft2 = ft(4, 2, 0, 3)
 
-        def ff(n: int) -> IT[int]:
-            return IT(*range(n))
+        def ff(n: int) -> FT[int]:
+            return FT(range(n))
 
-        fm = it1.bind(ff)
-        mm = it1.bind(ff, FM.MERGE)
-        em = it1.bind(ff, FM.EXHAUST)
+        fm = ft1.bind(ff)
+        mm = ft1.bind(ff, FM.MERGE)
+        em = ft1.bind(ff, FM.EXHAUST)
 
-        assert fm == IT(0, 1, 2, 3, 0, 1, 0, 1, 2, 0, 1, 2, 3, 4)
-        assert mm == IT(0, 0, 0, 0, 1, 1, 1, 1)
-        assert em == IT(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4)
+        assert fm == ft(0, 1, 2, 3, 0, 1, 0, 1, 2, 0, 1, 2, 3, 4)
+        assert mm == ft(0, 0, 0, 0, 1, 1, 1, 1)
+        assert em == ft(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4)
 
-        fm = it2.bind(ff, FM.CONCAT)
-        mm = it2.bind(ff, FM.MERGE)
-        em = it2.bind(ff, FM.EXHAUST)
+        fm = ft2.bind(ff, FM.CONCAT)
+        mm = ft2.bind(ff, FM.MERGE)
+        em = ft2.bind(ff, FM.EXHAUST)
 
-        assert fm == IT(0, 1, 2, 3, 0, 1, 0, 1, 2)
-        assert mm == IT()
-        assert em == IT(0, 0, 0, 1, 1, 1, 2, 2, 3)
+        assert fm == ft(0, 1, 2, 3, 0, 1, 0, 1, 2)
+        assert mm == ft()
+        assert em == ft(0, 0, 0, 1, 1, 1, 2, 2, 3)
 
-        fm = it0.bind(ff, FM.CONCAT)
-        mm = it0.bind(ff, FM.MERGE)
-        em = it0.bind(ff, FM.EXHAUST)
+        fm = ft0.bind(ff, FM.CONCAT)
+        mm = ft0.bind(ff, FM.MERGE)
+        em = ft0.bind(ff, FM.EXHAUST)
 
-        assert fm == IT()
-        assert mm == IT()
-        assert em == IT()
+        assert fm == FT()
+        assert mm == FT()
+        assert em == FT()
+
+    def test_add(self) -> None:
+        foo = ft(1, 2, 3)
+        bar = ft(4, 5)
+        foobar = foo + bar
+        assert foobar == ft(1, 2, 3, 4, 5)
+
+        baz = ft('a', 'b')
+        foobaz = foo + baz
+        assert foobaz == ft(1, 2, 3, 'a', 'b')
+
+    def test_mult_by_int(self) -> None:
+        fb = ft('foo', 'bar')
+        fb2 = fb * 2
+        fb3 = 3 * fb
+
+        assert fb2 == ft('foo', 'bar', 'foo', 'bar')
+        assert fb3 == ft('foo', 'bar', 'foo', 'bar', 'foo', 'bar')

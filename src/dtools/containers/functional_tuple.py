@@ -22,7 +22,7 @@ Providing a FP interface for tuples. Implemented by inheriting from tuple.
     - "homogeneous" in its data type
     - supports being further inherited from
     - unslotted
-  - function `inherited_tuple`
+  - function `functional_tuple`
     - return an InheritedTuple from function's arguments
 
 """
@@ -35,10 +35,10 @@ from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['FunctionalTuple']
 
-D_co = TypeVar('D_co', covariant=True)
+D = TypeVar('D', covariant=True)
 
 
-class FunctionalTuple[D_co](tuple[D_co, ...]):
+class FunctionalTuple[D](tuple[D, ...]):
     """Functional Tuple suitable for inheritance
 
     - supports both indexing and slicing
@@ -48,21 +48,11 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
 
     """
 
-    L_co = TypeVar('L_co', covariant=True)
-    R_co = TypeVar('R_co', covariant=True)
-    U_co = TypeVar('U_co', covariant=True)
+    L = TypeVar('L', covariant=True)
+    R = TypeVar('R', covariant=True)
+    U = TypeVar('U', covariant=True)
 
-    def __new__(cls, *ds: D_co) -> FunctionalTuple[D_co]:
-        """Construct the tuple from an iterable"""
-        return super().__new__(cls, ds)
-
-    def __init__(self, *ds: D_co) -> None:
-        pass
-
-    def __iter__(self) -> Iterator[D_co]:
-        return super().__iter__()
-
-    def __reversed__(self) -> Iterator[D_co]:
+    def __reversed__(self) -> Iterator[D]:
         for ii in range(len(self) - 1, -1, -1):
             yield (self[ii])
 
@@ -82,26 +72,26 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
         return True
 
     @overload    # type:ignore
-    def __getitem__(self, x: int) -> D_co: ...
+    def __getitem__(self, x: int) -> D: ...
     @overload
-    def __getitem__(self, x: slice) -> tuple[D_co, ...]: ...
+    def __getitem__(self, x: slice) -> tuple[D, ...]: ...
 
-    def __getitem__(self, idx: int | slice, /) -> tuple[D_co, ...] | D_co:
-        def newtup(tup: tuple[D_co, ...]) -> tuple[D_co, ...]:
+    def __getitem__(self, idx: int | slice, /) -> tuple[D, ...] | D:
+        def newtup(tup: tuple[D, ...]) -> tuple[D, ...]:
             return tup[0:-1] + tup[-1:]
 
         if isinstance(idx, slice):
-            return self.__class__(*newtup(super().__getitem__(idx)))
+            return self.__class__(newtup(super().__getitem__(idx)))
         else:
             return super().__getitem__(idx)
 
-    def foldl[L_co](
+    def foldl[L](
         self,
-        f: Callable[[L_co, D_co], L_co],
+        f: Callable[[L, D], L],
         /,
-        start: L_co | None = None,
-        default: L_co | None = None,
-    ) -> L_co | None:
+        start: L | None = None,
+        default: L | None = None,
+    ) -> L | None:
         """Fold Left
 
         * fold left with an optional starting value
@@ -113,7 +103,7 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
         if start is not None:
             acc = start
         elif self:
-            acc = cast(L_co, next(it))
+            acc = cast(L, next(it))
         else:
             if default is None:
                 msg = 'Both start and default cannot be None for an empty FunctionalTuple'
@@ -123,13 +113,13 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
             acc = f(acc, v)
         return acc
 
-    def foldr[R_co](
+    def foldr[R](
         self,
-        f: Callable[[D_co, R_co], R_co],
+        f: Callable[[D, R], R],
         /,
-        start: R_co | None = None,
-        default: R_co | None = None,
-    ) -> R_co | None:
+        start: R | None = None,
+        default: R | None = None,
+    ) -> R | None:
         """Fold Right
 
         * fold right with an optional starting value
@@ -141,7 +131,7 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
         if start is not None:
             acc = start
         elif self:
-            acc = cast(R_co, next(it))
+            acc = cast(R, next(it))
         else:
             if default is None:
                 msg = 'Both start and default cannot be None for an empty FunctionalTuple'
@@ -151,25 +141,25 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
             acc = f(v, acc)
         return acc
 
-    def copy(self) -> FunctionalTuple[D_co]:
+    def copy(self) -> FunctionalTuple[D]:
         """Return a shallow copy of FunctionalTuple in O(1) time & space complexity."""
-        return FunctionalTuple(*self)
+        return self.__class__(self)
 
-    def __add__(self, other: object, /) -> tuple[D_co, ...]:
+    def __add__(self, other: object, /) -> tuple[D, ...]:
         if not isinstance(other, FunctionalTuple):
             msg = 'FunctionalTuple being added to something not an FunctionalTuple'
             raise ValueError(msg)
-        return self.__class__(*concat(self, other))
+        return self.__class__(concat(self, other))
 
-#    def __mul__(self, num: int, /) -> tuple[D_co, ...]:
-#        return self.__class__(*super().__mul__(num))
-#
-#    def __rmul__(self, num: int, /) -> tuple[D_co]:
-#        return self.__class__(*super().__rmul__(num))
+    def __mul__(self, num: int, /) -> tuple[D, ...]:
+        return self.__class__(super().__mul__(num))
 
-    def accummulate[L_co](
-        self, f: Callable[[L_co, D_co], L_co], s: L_co | None = None, /
-    ) -> FunctionalTuple[L_co]:
+    def __rmul__(self, num: int, /) -> tuple[D]:
+        return self.__class__(super().__rmul__(num))
+
+    def accummulate[L](
+        self, f: Callable[[L, D], L], s: L | None = None, /
+    ) -> FunctionalTuple[L]:
         """Accumulate partial folds
 
         Accumulate partial fold results in an FunctionalTuple with an optional starting
@@ -177,15 +167,15 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
 
         """
         if s is None:
-            return FunctionalTuple(*accumulate(self, f))
-        return FunctionalTuple(*accumulate(self, f, s))
+            return FunctionalTuple(accumulate(self, f))
+        return FunctionalTuple(accumulate(self, f, s))
 
-    def map[U_co](self, f: Callable[[D_co], U_co], /) -> FunctionalTuple[U_co]:
-        return FunctionalTuple(*map(f, self))
+    def map[U](self, f: Callable[[D], U], /) -> FunctionalTuple[U]:
+        return FunctionalTuple(map(f, self))
 
-    def bind[U_co](
-        self, f: Callable[[D_co], FunctionalTuple[U_co]], type: FM = FM.CONCAT, /
-    ) -> FunctionalTuple[U_co] | Never:
+    def bind[U](
+        self, f: Callable[[D], FunctionalTuple[U]], type: FM = FM.CONCAT, /
+    ) -> FunctionalTuple[U] | Never:
         """Bind function `f` to the `FunctionalTuple`.
 
         * FM Enum types
@@ -196,10 +186,14 @@ class FunctionalTuple[D_co](tuple[D_co, ...]):
         """
         match type:
             case FM.CONCAT:
-                return FunctionalTuple(*concat(*map(f, self)))
+                return FunctionalTuple(concat(*map(f, self)))
             case FM.MERGE:
-                return FunctionalTuple(*merge(*map(f, self)))
+                return FunctionalTuple(merge(*map(f, self)))
             case FM.EXHAUST:
-                return FunctionalTuple(*exhaust(*map(f, self)))
+                return FunctionalTuple(exhaust(*map(f, self)))
 
         raise ValueError('Unknown FM type')
+
+
+def functional_tuple[D](*ds: D):
+    return FunctionalTuple(ds)

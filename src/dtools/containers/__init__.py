@@ -18,7 +18,7 @@
   - *module* `box`: stateful container holding at most one object
   - *module* `functional_tuple`: directly inherited from the `tuple` builtin 
     - gives `tuple` FP interface
-    - more easily inherited from than from tuple directly
+    - designed to be further inherited from
   - *module* `immutable_list`: 
     - hashable
       - hashability will be enforced at runtime
