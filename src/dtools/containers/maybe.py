@@ -17,7 +17,6 @@
 Functional data types to use in lieu of exceptions.
 
 - *class* MayBe: maybe (optional) monad
-- *class* Xor: left biased either monad
 
 """
 

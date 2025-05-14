@@ -15,9 +15,9 @@
 from __future__ import annotations
 from dtools.containers.immutable_list import ImmutableList as IL
 from dtools.containers.immutable_list import immutable_list as il
+from dtools.containers.maybe import MayBe as MB
+from dtools.containers.xor import Xor, RIGHT
 from dtools.fp.iterables import FM
-from dtools.fp.err_handling import MayBe as MB
-from dtools.fp.err_handling import Xor, RIGHT
 
 class TestImmutableList:
     """ImmutableList test suite"""

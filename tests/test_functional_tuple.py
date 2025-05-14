@@ -14,9 +14,9 @@
 
 from __future__ import annotations
 from dtools.containers.functional_tuple import FunctionalTuple as IT
+from dtools.containers.maybe import MayBe as MB
+from dtools.containers.xor import Xor, RIGHT
 from dtools.fp.iterables import FM
-from dtools.fp.err_handling import MayBe as MB
-from dtools.fp.err_handling import Xor, RIGHT
 
 class TestITuple:
     """ITuple test suite"""

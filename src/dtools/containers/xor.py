@@ -16,7 +16,6 @@
 
 Functional data types to use in lieu of exceptions.
 
-- *class* MayBe: maybe (optional) monad
 - *class* Xor: left biased either monad
 
 """
@@ -27,7 +26,7 @@ __all__ = ['Xor', 'LEFT', 'RIGHT']
 
 from collections.abc import Callable, Iterator
 from typing import cast, Never, overload, TypeVar
-from dtools.fp.bool import _Bool as Both, _True as Left, _False as Right
+from dtools.fp.bool import Bool as Both, Truth as Left, Lie as Right
 from dtools.fp.singletons import Sentinel as _Sentinel
 from .maybe import MayBe
 
