@@ -24,7 +24,7 @@ from __future__ import annotations
 
 __all__ = ['Xor', 'LEFT', 'RIGHT']
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from typing import cast, Never, overload, TypeVar
 from dtools.fp.bool import Bool as Both, Truth as Left, Lie as Right
 from dtools.fp.singletons import Sentinel as _Sentinel
@@ -63,7 +63,6 @@ class Xor[L, R]:
 
     U = TypeVar('U', covariant=True)
     V = TypeVar('V', covariant=True)
-    T = TypeVar('T')
 
     @overload
     def __new__(cls, value: L) -> Xor[L, R]: ...
@@ -243,3 +242,24 @@ class Xor[L, R]:
         if fall_back:
             return fall_back.get()
         return applied.get()
+
+    @classmethod
+    def sequence[U, V](cls, sequence_xor_uv: Sequence[Xor[U, V]]) -> Xor[Sequence[U], V]:
+        """Sequence an indexable of type `Xor[~U, ~V]`
+
+        - if the iterated `Xor` values are all lefts, then
+          - return an `Xor` of an iterable of the left values
+        - otherwise return a right Xor containing the first right encountered
+
+        """
+        list_items: list[U] = []
+
+        for xor_uv in sequence_xor_uv:
+            if xor_uv:
+                list_items.append(xor_uv.get())
+            else:
+                return Xor(xor_uv.get_right().get(), RIGHT)
+
+        sequence_type = cast(Sequence[U], type(sequence_xor_uv))
+
+        return Xor(sequence_type(list_items))  # type: ignore # subclass will be callable

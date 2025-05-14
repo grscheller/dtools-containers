@@ -47,10 +47,8 @@ class MayBe[D]:
       - best practice is to first check the MayBe in a boolean context
 
     """
-
-    T = TypeVar('T')
-    U = TypeVar('U')
-    V = TypeVar('V')
+    U = TypeVar('U', covariant=True)
+    V = TypeVar('V', covariant=True)
 
     __slots__ = ('_value',)
     __match_args__ = ('_value',)
@@ -84,7 +82,6 @@ class MayBe[D]:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
             return False
-
         if self._value is other._value:
             return True
         if self._value == other._value:
@@ -167,7 +164,7 @@ class MayBe[D]:
             return MayBe()
 
     @classmethod
-    def sequence[T](cls, sequence_mb_t: Sequence[MayBe[T]]) -> MayBe[Sequence[T]]:
+    def sequence[U](cls, sequence_mb_u: Sequence[MayBe[U]]) -> MayBe[Sequence[U]]:
         """Sequence a mutable indexable of type `MayBe[~T]`
 
         * if the iterated `MayBe` values are not all empty,
@@ -175,14 +172,14 @@ class MayBe[D]:
           * otherwise return an empty `MayBe`
 
         """
-        list_items: list[T] = list()
+        list_items: list[U] = list()
 
-        for mb_t in sequence_mb_t:
-            if mb_t:
-                list_items.append(mb_t.get())
+        for mb_u in sequence_mb_u:
+            if mb_u:
+                list_items.append(mb_u.get())
             else:
                 return MayBe()
 
-        sequence_type = type(sequence_mb_t)
+        sequence_type = cast(Sequence[U], type(sequence_mb_u))
 
-        return MayBe(sequence_type(list_items))
+        return MayBe(sequence_type(list_items))  # type: ignore # subclass will be callable

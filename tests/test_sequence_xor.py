@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from typing import Final
 from dtools.containers.functional_tuple import FunctionalTuple as FT
+from dtools.containers.functional_tuple import functional_tuple as ft
 from dtools.queues.de import DEQueue as DQ, de_queue as dq
 from dtools.containers.xor import Xor, LEFT, RIGHT
 
@@ -32,28 +33,20 @@ class Test_Xor_sequence:
             map(lambda x: Xor(x, LEFT), range(1, 2501))
         )
         ftuple_of_xor_int_str: FT[Xor[int, str]] = FT(
-            *map(lambda x: Xor(x, LEFT), range(1, 2501))
+            map(lambda x: Xor(x, LEFT), range(1, 2501))
         )
         dqueue_of_xor_int_str: DQ[Xor[int, str]] = DQ(
             map(lambda x: Xor(x, LEFT), range(1, 2501))
         )
 
-        xor_listInt_str: Xor[list[int], str] = Xor.sequence(
-            list_of_xor_int_str
-        )
-        xor_tupleInt_str: Xor[tuple[int, ...], str] = Xor.sequence(
-            tuple_of_xor_int_str
-        )
-        xor_ftuple_int_str: Xor[FT[int], str] = Xor.sequence(
-            ftuple_of_xor_int_str
-            )
-        xor_dqueue_int_str: Xor[DQ[int], str] = Xor.sequence(
-            dqueue_of_xor_int_str
-        )
+        xor_listInt_str = Xor.sequence(list_of_xor_int_str)
+        xor_tupleInt_str = Xor.sequence(tuple_of_xor_int_str)
+        xor_ftuple_int_str = Xor.sequence(ftuple_of_xor_int_str)
+        xor_dqueue_int_str = Xor.sequence(dqueue_of_xor_int_str)
 
         assert xor_listInt_str == Xor(list(range(1, 2501)), LEFT)
         assert xor_tupleInt_str == Xor(tuple(range(1, 2501)), LEFT)
-        assert xor_ftuple_int_str == Xor(FT(*range(1, 2501)), LEFT)
+        assert xor_ftuple_int_str == Xor(FT(range(1, 2501)), LEFT)
         assert xor_dqueue_int_str == Xor(DQ(range(1, 2501)), LEFT)
 
     def test_with_a_right(self) -> None:
@@ -64,7 +57,7 @@ class Test_Xor_sequence:
         tuple_of_xor_int_str: tuple[Xor[int, str], ...] = (
             Xor(1, LEFT), Xor('2', RIGHT), Xor(3, LEFT), Xor(4, LEFT)
         )
-        ftuple_of_xor_int_str = FT(
+        ftuple_of_xor_int_str = ft(
             Xor(1, LEFT), Xor(2, LEFT), Xor('3', RIGHT), Xor(4, LEFT)
         )
         dqueue_of_xor_int_str = dq(
