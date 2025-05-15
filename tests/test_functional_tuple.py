@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
+from typing import reveal_type
 from dtools.containers.functional_tuple import FunctionalTuple as FT
 from dtools.containers.functional_tuple import functional_tuple as ft
 from dtools.containers.maybe import MayBe as MB
@@ -50,9 +51,14 @@ class TestFunctionalTuple:
         ft4 = ft3.copy()
         assert ft4 == ft3
         assert ft4 is not ft3
-#       assert MB.idx(ft1, 0).get(42) == 42
-#       assert str(Xor.idx(ft2, 42)) == str(Xor(IndexError('tuple index out of range'), RIGHT))
-#       assert str(Xor.idx(ft2, 42).get_right().get()) == 'tuple index out of range'
+        mb_int42 = MB.failable_index(ft1, 0)
+        reveal_type(NotImplemented)
+        reveal_type(mb_int42)
+        int42 = mb_int42.get(42)
+        reveal_type(int42)
+        assert int42 == 42
+        assert str(Xor.failable_index(ft2, 42)) == str(Xor(IndexError('tuple index out of range'), RIGHT))
+        assert str(Xor.failable_index(ft2, 42).get_right().get()) == 'tuple index out of range'
 
     def test_indexing(self) -> None:
         ft0: FT[str] = FT()
@@ -62,10 +68,10 @@ class TestFunctionalTuple:
         assert ft1[-1] == "Mary"
         assert ft1[1] == "Rachel"
         assert ft1[-2] == "Rebekah"
-#       assert MB.idx(ft1, -2).get('Buggy') == 'Rebekah'
-#       assert MB.idx(ft1, 42).get('Buggy') == 'Buggy'
-#       assert MB.idx(ft1, 0).get('Buggy') == 'Emily'
-#       assert MB.idx(ft0, 0).get('Buggy') == 'Buggy'
+        assert MB.failable_index(ft1, -2).get('Buggy') == 'Rebekah'
+        assert MB.failable_index(ft1, 42).get('Buggy') == 'Buggy'
+        assert MB.failable_index(ft1, 0).get('Buggy') == 'Emily'
+        assert MB.failable_index(ft0, 0).get('Buggy') == 'Buggy'
 
     def test_slicing(self) -> None:
         ft0: FT[int] = FT()

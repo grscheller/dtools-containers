@@ -243,8 +243,8 @@ class Xor[L, R]:
             return fall_back.get()
         return applied.get()
 
-    @classmethod
-    def sequence[U, V](cls, sequence_xor_uv: Sequence[Xor[U, V]]) -> Xor[Sequence[U], V]:
+    @staticmethod
+    def sequence[U, V](sequence_xor_uv: Sequence[Xor[U, V]]) -> Xor[Sequence[U], V]:
         """Sequence an indexable of type `Xor[~U, ~V]`
 
         - if the iterated `Xor` values are all lefts, then
@@ -263,3 +263,38 @@ class Xor[L, R]:
         sequence_type = cast(Sequence[U], type(sequence_xor_uv))
 
         return Xor(sequence_type(list_items))  # type: ignore # subclass will be callable
+
+    @staticmethod
+    def failable_call[T, V](f: Callable[[T], V], left: T) -> Xor[V, Exception]:
+        """Return Xor wrapped result of a function call that can fail"""
+        try:
+            xor_return = Xor[V, Exception](f(left), LEFT)
+        except (
+            LookupError,
+            ValueError,
+            TypeError,
+            BufferError,
+            ArithmeticError,
+            RecursionError,
+            ReferenceError,
+            RuntimeError,
+        ) as exc:
+            xor_return = Xor(exc, RIGHT)
+
+        return xor_return
+
+    @staticmethod
+    def failable_index[V](v: Sequence[V], ii: int) -> Xor[V, Exception]:
+        """Return an Xor of an indexed value that can fail"""
+        try:
+            xor_return = Xor[V, Exception](v[ii], LEFT)
+        except (
+            IndexError,
+            TypeError,
+            ArithmeticError,
+            RuntimeError,
+        ) as exc:
+            xor_return = Xor(exc, RIGHT)
+
+        return xor_return
+

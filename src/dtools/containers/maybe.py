@@ -49,6 +49,8 @@ class MayBe[D]:
     """
     U = TypeVar('U', covariant=True)
     V = TypeVar('V', covariant=True)
+    S = TypeVar('S')
+    T = TypeVar('T')
 
     __slots__ = ('_value',)
     __match_args__ = ('_value',)
@@ -163,8 +165,8 @@ class MayBe[D]:
         ):
             return MayBe()
 
-    @classmethod
-    def sequence[U](cls, sequence_mb_u: Sequence[MayBe[U]]) -> MayBe[Sequence[U]]:
+    @staticmethod
+    def sequence[U](sequence_mb_u: Sequence[MayBe[U]]) -> MayBe[Sequence[U]]:
         """Sequence a mutable indexable of type `MayBe[~T]`
 
         * if the iterated `MayBe` values are not all empty,
@@ -183,3 +185,42 @@ class MayBe[D]:
         sequence_type = cast(Sequence[U], type(sequence_mb_u))
 
         return MayBe(sequence_type(list_items))  # type: ignore # subclass will be callable
+
+    @staticmethod
+    def failable_call[T, V](f: Callable[[T], V], t: T) -> MayBe[V]:
+        """Return MayBe wrapped result of a function call that can fail"""
+        try:
+            mb_return = MayBe(f(t))
+        except (
+            LookupError,
+            ValueError,
+            TypeError,
+            BufferError,
+            ArithmeticError,
+            RecursionError,
+            ReferenceError,
+            RuntimeError,
+        ):
+            mb_return = MayBe()
+
+        return mb_return
+
+    @staticmethod
+    def failable_index[V](vs: Sequence[V], ii: int) -> MayBe[V]:
+        """Return a MayBe of an indexed value that can fail"""
+        try:
+            mb_return = MayBe(vs[ii])
+        except (
+            LookupError,
+            ValueError,
+            TypeError,
+            BufferError,
+            ArithmeticError,
+            RecursionError,
+            ReferenceError,
+            RuntimeError,
+        ):
+            mb_return = MayBe()
+
+        return mb_return
+
