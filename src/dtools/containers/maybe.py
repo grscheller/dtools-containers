@@ -49,7 +49,6 @@ class MayBe[D]:
     """
     U = TypeVar('U', covariant=True)
     V = TypeVar('V', covariant=True)
-    S = TypeVar('S')
     T = TypeVar('T')
 
     __slots__ = ('_value',)

@@ -44,4 +44,4 @@ used for an error condition or a text string describing what went wrong.
 [1]: https://pypi.org/project/dtools.containers/
 [2]: https://github.com/grscheller/dtools-containers/
 [3]: https://grscheller.github.io/dtools-namespace_projects/containers/
-[4]: https://github.com/grscheller/dtools-namespace_projects/blob/main/README.md
+[4]: https://github.com/grscheller/dtools-namespace-projects/blob/main/README.md

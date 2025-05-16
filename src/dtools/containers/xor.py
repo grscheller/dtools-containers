@@ -63,6 +63,7 @@ class Xor[L, R]:
 
     U = TypeVar('U', covariant=True)
     V = TypeVar('V', covariant=True)
+    T = TypeVar('T')
 
     @overload
     def __new__(cls, value: L) -> Xor[L, R]: ...
