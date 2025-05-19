@@ -1,10 +1,11 @@
 # CHANGELOG
 
-PyPI dtools.tuples project.
+PyPI dtools.containers project.
 
-- first digit - major event, epoch, or paradigm shift
-- second digit - breaking API changes, major changes
-- third digit - bug fixes, API additions, docstring changes
+- Strict 3 digit semantic versioning (adopted 2025-05-19)
+  - MAJOR version for incompatible API changes
+  - MINOR version for backward compatible added functionality
+  - PATCH version for backward compatible bug fixes
 
 ## Releases and Important Milestones
 
@@ -16,6 +17,15 @@ PyPI dtools.tuples project.
   - immutable_list.py -> immutable, guaranteed hashable "list"
   - maybe.py -> implements the "maybe" monad from FP
   - xor.py -> implements a left biased either monad from FP
+
+### Adapting strict Semantic from this point on - date 2025-05-19
+
+- [Semantic Versioning 2.0.0](https://semver.org/)
+- see top of file
+- previous versioning scheme used
+  - first digit - major event, epoch, or paradigm shift
+  - second digit - breaking API changes, major changes
+  - third digit - bug fixes, API additions, docstring changes
 
 ### Version 0.27.1 - PyPI release date 2025-04-22
 
