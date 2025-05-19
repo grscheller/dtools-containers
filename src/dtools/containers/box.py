@@ -12,9 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""### dtools.containers.boxes.box
+"""Stateful container holding at most one item of a given type.
 
-Stateful container holding at most one item.
+- where `Box(item)` contains at most one item of a generic type
+- `Box()` semantically represents an empty container
+    - can store any item of any type, including `None`
+      - with one exception, storing `Sentinel('Box')` results in a `Box()`
+- mutable methods can throw `ValueError`
+    - `Box().get()` will throw `ValueError` 
+- use functional methods `map` and `bind` to create boxes of other types
+- boxes are iterable
+
 """
 
 from __future__ import annotations
@@ -28,16 +36,18 @@ from dtools.fp.singletons import Sentinel
 
 D = TypeVar('D')
 
+_sentinel: Final[Sentinel] = Sentinel('Box')
+
 
 class Box[D]:
-    """Container holding at most one item
+    """Container holding at most one item of a given type
 
     - where `Box(item)` contains at most one item of type `~D`
-    - `Box()` semantically represents an empty container
-    - mutable semantics, map & bind modify the current instance
-      - with one exception can store any item of any type
-        - trying to store `Sentinel('Box'): ~D` results in a Box()
-    - use stateful methods `put` and `pop` to mutate the container
+    - `Box()` creates an empty container
+      - can store any item of any type, including `None`
+        - with one exception, storing `Sentinel('Box')` results in a `Box()`
+    - mutable methods can throw `ValueError`
+      - `Box().get()` will throw `ValueError` 
     - use functional methods `map` and `bind` to create boxes of other types
 
     """
@@ -45,7 +55,7 @@ class Box[D]:
     __slots__ = ('_item',)
     __match_args__ = ('_item',)
 
-    U = TypeVar('U')
+    T = TypeVar('T')
 
     @overload
     def __init__(self) -> None: ...
@@ -94,7 +104,6 @@ class Box[D]:
         - raises `ValueError` if an alternate value is not provided but needed
 
         """
-        _sentinel: Final[Sentinel] = Sentinel('Box')
         if self._item is not _sentinel:
             return cast(D, self._item)
         if alt is _sentinel:
@@ -102,25 +111,12 @@ class Box[D]:
             raise ValueError(msg)
         return cast(D, alt)
 
-    def put(self, item: D) -> None:
-        """Put a value in the Box if empty, if not empty do nothing.
-
-        - raises `ValueError` if box is not empty
-
-        """
-        if self._item is Sentinel('Box'):
-            self._item = item
-        else:
-            msg = 'Box: Trying to put an item in an empty Box'
-            raise ValueError(msg)
-
     def pop(self) -> D | Never:
-        """Pop the value if the Box is not empty.
+        """Pop the value if Box is not empty.
 
         - raises `ValueError` if box is empty
 
         """
-        _sentinel: Final[Sentinel] = Sentinel('Box')
         if self._item is _sentinel:
             msg = 'Box: Trying to pop an item from an empty Box'
             raise ValueError(msg)
@@ -128,14 +124,39 @@ class Box[D]:
         self._item = _sentinel
         return popped
 
-    def map[U](self, f: Callable[[D], U]) -> Box[U]:
+    def push(self, item: D) -> None | Never:
+        """Push an item in an empty Box.
+
+        - raises `ValueError` if box is not empty
+
+        """
+        if self._item is Sentinel('Box'):
+            self._item = item
+        else:
+            msg = 'Box: Trying to push an item in an empty Box'
+            raise ValueError(msg)
+        return None
+
+    def put(self, item: D) -> None:
+        """Put an item in the Box. Discard any previous contents."""
+        self._item = item
+
+    def exchange(self, new_item: D) -> D | Never:
+        if self._item is _sentinel:
+            msg = 'Box: Trying to exchange items using an empty Box'
+            raise ValueError(msg)
+        popped = cast(D, self._item)
+        self._item = new_item
+        return popped
+
+    def map[T](self, f: Callable[[D], T]) -> Box[T]:
         """Map function `f` over contents. Return new instance."""
         if self._item is Sentinel('Box'):
             return Box()
         return Box(f(cast(D, self._item)))
 
-    def bind[U](self, f: Callable[[D], Box[U]]) -> Box[U]:
+    def bind[T](self, f: Callable[[D], Box[T]]) -> Box[T]:
         """Flatmap `Box` with function `f`. Return new instance."""
-        if self._item is Sentinel('Box'):
+        if self._item is _sentinel:
             return Box()
         return f(cast(D, self._item))
