@@ -31,7 +31,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 from typing import cast, Never, overload, TypeVar
-from dtools.fp.iterables import FM, accumulate, concat, exhaust, merge
+from dtools.iterables import FM, accumulate, concat, exhaust, merge
 
 __all__ = ['FunctionalTuple']
 

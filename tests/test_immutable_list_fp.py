@@ -19,7 +19,7 @@ from dtools.containers.immutable_list import ImmutableList as IL
 from dtools.containers.immutable_list import immutable_list as il
 from dtools.containers.maybe import MayBe as MB
 from dtools.splitends.splitend import SplitEnd as SE
-from dtools.fp.iterables import FM
+from dtools.iterables import FM
 
 
 class TestFP:

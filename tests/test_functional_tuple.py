@@ -18,7 +18,7 @@ from dtools.containers.functional_tuple import FunctionalTuple as FT
 from dtools.containers.functional_tuple import functional_tuple as ft
 from dtools.containers.maybe import MayBe as MB
 from dtools.containers.xor import Xor, RIGHT
-from dtools.fp.iterables import FM
+from dtools.iterables import FM
 
 class TestFunctionalTuple:
     """FunctionalTuple test suite"""
