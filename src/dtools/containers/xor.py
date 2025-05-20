@@ -33,8 +33,8 @@ from .maybe import MayBe
 L = TypeVar('L', covariant=True)
 R = TypeVar('R', covariant=True)
 
-LEFT = Left()
-RIGHT = Right()
+LEFT = Left('LEFT')
+RIGHT = Right('RIGHT')
 
 
 class Xor[L, R]:
@@ -42,7 +42,7 @@ class Xor[L, R]:
     value, but not both.
 
     - implements a left biased Either Monad
-      - `Xor(value: ~L)` or `Xor(value: ~L, LEFT)` produces a left `Xor`
+      - `Xor(value: ~L, LEFT)` produces a left `Xor`
       - `Xor(value: ~L, RIGHT)` produces a right `Xor`
     - in a Boolean context
       - `True` if a left `Xor`
@@ -65,18 +65,6 @@ class Xor[L, R]:
     V = TypeVar('V', covariant=True)
     T = TypeVar('T')
 
-    @overload
-    def __new__(cls, value: L) -> Xor[L, R]: ...
-    @overload
-    def __new__(cls, value: L, side: Right) -> Xor[L, R]: ...
-    @overload
-    def __new__(cls, value: R, side: Left) -> Xor[L, R]: ...
-
-    def __new__(cls, value: L | R, side: Both = RIGHT) -> Xor[L, R]:
-        return super(Xor, cls).__new__(cls)
-
-    @overload
-    def __init__(self, value: L) -> None: ...
     @overload
     def __init__(self, value: L, side: Left) -> None: ...
     @overload
@@ -213,7 +201,9 @@ class Xor[L, R]:
             return fall_back.get()
         return applied.get()
 
-    def bind_except[U](self, f: Callable[[L], Xor[U, R]], fallback_right: R) -> Xor[U, R]:
+    def bind_except[U](
+        self, f: Callable[[L], Xor[U, R]], fallback_right: R
+    ) -> Xor[U, R]:
         """Flatmap `Xor` with function `f` with fallback right
 
         - provide fallback right value if exception thrown.
@@ -298,4 +288,3 @@ class Xor[L, R]:
             xor_return = Xor(exc, RIGHT)
 
         return xor_return
-
