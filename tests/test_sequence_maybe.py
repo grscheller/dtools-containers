@@ -16,8 +16,8 @@ from __future__ import annotations
 
 from dtools.containers.functional_tuple import FunctionalTuple as FT
 from dtools.containers.functional_tuple import functional_tuple as ft
-from dtools.queues.de import DEQueue as DQ, de_queue as dq
 from dtools.containers.maybe import MayBe as MB
+from dtools.queues.de import DEQueue as DQ, de_queue as dq
 
 
 class Test_MB_sequence:
