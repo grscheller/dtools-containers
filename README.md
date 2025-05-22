@@ -1,6 +1,8 @@
 # Developer Tools - Container based data structures
 
 Python package of modules implementing container-like data structures.
+This project is part of the [Developer Tools for Python][4] **dtools.**
+namespace project.
 
 - **Repositories**
   - [dtools.containers][1] project on *PyPI*
@@ -8,8 +10,7 @@ Python package of modules implementing container-like data structures.
 - **Detailed documentation**
   - [Detailed API documentation][3] on *GH-Pages*
 
-This project is part of the
-[Developer Tools for Python][4] **dtools.** namespace project.
+## Overview
 
 ### Single item box - dtools.containers.box
 
